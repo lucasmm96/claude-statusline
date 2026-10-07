@@ -1,0 +1,171 @@
+{
+  "sessions": {
+    "a1b2c3d4-0001-4000-8000-000000000001": {
+      "session_id": "a1b2c3d4-0001-4000-8000-000000000001",
+      "session_name": "Feature implementation",
+      "model": "Sonnet 4.6",
+      "started_at": "2026-10-05T10:00:00.000Z",
+      "last_activity_at": "2026-10-05T11:52:00.000Z",
+      "_state": {
+        "total_in": 151200,
+        "total_out": 9100,
+        "last_ctx": 41
+      },
+      "log": [
+        {
+          "at": "2026-10-05T10:00:00.000Z",
+          "input_tokens": 2,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 96400,
+          "output_tokens": 4800,
+          "context_pct": 51
+        },
+        {
+          "at": "2026-10-05T10:18:00.000Z",
+          "input_tokens": 1,
+          "cache_read_tokens": 101200,
+          "cache_write_tokens": 3100,
+          "output_tokens": 1250,
+          "context_pct": 53
+        },
+        {
+          "at": "2026-10-05T10:35:00.000Z",
+          "input_tokens": 2,
+          "cache_read_tokens": 104300,
+          "cache_write_tokens": 1800,
+          "output_tokens": 960,
+          "context_pct": 54
+        },
+        {
+          "at": "2026-10-05T10:52:00.000Z",
+          "input_tokens": 1,
+          "cache_read_tokens": 106100,
+          "cache_write_tokens": 4200,
+          "output_tokens": 2100,
+          "context_pct": 57
+        },
+        {
+          "at": "2026-10-05T11:08:00.000Z",
+          "input_tokens": 3,
+          "cache_read_tokens": 110300,
+          "cache_write_tokens": 5900,
+          "output_tokens": 2850,
+          "context_pct": 62
+        },
+        {
+          "at": "2026-10-05T11:14:00.000Z",
+          "event": "compact",
+          "context_pct": 0
+        },
+        {
+          "at": "2026-10-05T11:20:00.000Z",
+          "input_tokens": 3,
+          "cache_read_tokens": 54200,
+          "cache_write_tokens": 21000,
+          "output_tokens": 3400,
+          "context_pct": 38
+        },
+        {
+          "at": "2026-10-05T11:38:00.000Z",
+          "input_tokens": 2,
+          "cache_read_tokens": 78600,
+          "cache_write_tokens": 3500,
+          "output_tokens": 1200,
+          "context_pct": 42
+        },
+        {
+          "at": "2026-10-05T11:52:00.000Z",
+          "input_tokens": 1,
+          "cache_read_tokens": 82100,
+          "cache_write_tokens": 2900,
+          "output_tokens": 890,
+          "context_pct": 43
+        }
+      ]
+    },
+    "a1b2c3d4-0002-4000-8000-000000000002": {
+      "session_id": "a1b2c3d4-0002-4000-8000-000000000002",
+      "session_name": "Bug investigation",
+      "model": "Sonnet 4.6",
+      "started_at": "2026-10-06T14:20:00.000Z",
+      "last_activity_at": "2026-10-06T15:15:00.000Z",
+      "_state": {
+        "total_in": 97500,
+        "total_out": 5800,
+        "last_ctx": 49
+      },
+      "log": [
+        {
+          "at": "2026-10-06T14:20:00.000Z",
+          "input_tokens": 1,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 87400,
+          "output_tokens": 3900,
+          "context_pct": 46
+        },
+        {
+          "at": "2026-10-06T14:38:00.000Z",
+          "input_tokens": 2,
+          "cache_read_tokens": 91300,
+          "cache_write_tokens": 2100,
+          "output_tokens": 1050,
+          "context_pct": 47
+        },
+        {
+          "at": "2026-10-06T14:55:00.000Z",
+          "input_tokens": 3,
+          "cache_read_tokens": 93400,
+          "cache_write_tokens": 1500,
+          "output_tokens": 480,
+          "context_pct": 48
+        },
+        {
+          "at": "2026-10-06T15:15:00.000Z",
+          "input_tokens": 1,
+          "cache_read_tokens": 94900,
+          "cache_write_tokens": 1100,
+          "output_tokens": 920,
+          "context_pct": 49
+        }
+      ]
+    },
+    "a1b2c3d4-0003-4000-8000-000000000003": {
+      "session_id": "a1b2c3d4-0003-4000-8000-000000000003",
+      "session_name": "Code review",
+      "model": "Opus 5.5",
+      "started_at": "2026-10-07T09:00:00.000Z",
+      "last_activity_at": "2026-10-07T09:45:00.000Z",
+      "_state": {
+        "total_in": 73800,
+        "total_out": 4500,
+        "last_ctx": 37
+      },
+      "log": [
+        {
+          "at": "2026-10-07T09:00:00.000Z",
+          "input_tokens": 1,
+          "cache_read_tokens": 0,
+          "cache_write_tokens": 66200,
+          "output_tokens": 2900,
+          "context_pct": 35
+        },
+        {
+          "at": "2026-10-07T09:25:00.000Z",
+          "input_tokens": 2,
+          "cache_read_tokens": 69100,
+          "cache_write_tokens": 2400,
+          "output_tokens": 1050,
+          "context_pct": 36
+        },
+        {
+          "at": "2026-10-07T09:45:00.000Z",
+          "input_tokens": 1,
+          "cache_read_tokens": 71500,
+          "cache_write_tokens": 900,
+          "output_tokens": 700,
+          "context_pct": 37
+        }
+      ]
+    }
+  }
+}
