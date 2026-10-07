@@ -26,14 +26,15 @@ const [,, rawInput, logFile, ppidFallback] = process.argv;
 let d = {};
 try { d = JSON.parse(rawInput); } catch(e) {}
 
-const sessionId   = d.session_id                             ?? ppidFallback;
-const sessionName = d.session_name                           ?? null;
-const model       = d.model?.display_name                    ?? 'Unknown';
-const used_pct    = d.context_window?.used_percentage        ?? 0;
-const total_in    = d.context_window?.total_input_tokens     ?? 0;
-const total_out   = d.context_window?.total_output_tokens    ?? 0;
-const usage       = d.context_window?.current_usage          ?? {};
-const nowIso      = new Date().toISOString();
+const sessionId      = d.session_id                             ?? ppidFallback;
+const sessionName    = d.session_name                           ?? null;
+const transcriptPath = d.transcript_path                        ?? null;
+const model          = d.model?.display_name                    ?? 'Unknown';
+const used_pct       = d.context_window?.used_percentage        ?? 0;
+const total_in       = d.context_window?.total_input_tokens     ?? 0;
+const total_out      = d.context_window?.total_output_tokens    ?? 0;
+const usage          = d.context_window?.current_usage          ?? {};
+const nowIso         = new Date().toISOString();
 
 const input_tokens       = usage.input_tokens                ?? 0;
 const cache_read_tokens  = usage.cache_read_input_tokens     ?? 0;
@@ -51,7 +52,7 @@ let sess = data.sessions[sessionId] ?? {
   model,
   started_at: nowIso,
   last_activity_at: nowIso,
-  _state: { total_in: 0, total_out: 0, last_ctx: 0 },
+  _state: { total_in: 0, total_out: 0, last_ctx: 0, custom_title: null, title_scan_offset: 0 },
   log: []
 };
 
@@ -59,6 +60,41 @@ const st       = sess._state ?? {};
 const prev_in  = st.total_in  ?? 0;
 const prev_out = st.total_out ?? 0;
 const last_ctx = st.last_ctx  ?? 0;
+
+// --- Read custom-title from JSONL transcript (incremental, only new bytes) ---
+let custom_title       = st.custom_title       ?? null;
+let title_scan_offset  = st.title_scan_offset  ?? 0;
+
+if (transcriptPath) {
+  try {
+    const stat = fs.statSync(transcriptPath);
+    const fileSize = stat.size;
+    if (fileSize > title_scan_offset) {
+      const readFrom = Math.max(0, title_scan_offset - 100); // slight overlap to avoid partial-line issues
+      const buf = Buffer.alloc(fileSize - readFrom);
+      const fd = fs.openSync(transcriptPath, 'r');
+      fs.readSync(fd, buf, 0, buf.length, readFrom);
+      fs.closeSync(fd);
+      const text = buf.toString('utf8');
+      const lines = text.split('\n');
+      for (let i = 0; i < lines.length - 1; i++) { // skip last (may be incomplete)
+        const line = lines[i].trim();
+        if (!line) continue;
+        try {
+          const entry = JSON.parse(line);
+          if (entry.type === 'custom-title' && entry.customTitle) {
+            custom_title = entry.customTitle;
+          }
+        } catch(e) {}
+      }
+      const lastNl = text.lastIndexOf('\n');
+      title_scan_offset = readFrom + (lastNl >= 0 ? lastNl + 1 : text.length);
+    }
+  } catch(e) {}
+}
+
+const effectiveName = custom_title ?? sessionName;
+
 const is_compact = (total_in + total_out) < (prev_in + prev_out) && (prev_in + prev_out) > 0;
 
 if (is_compact) {
@@ -75,10 +111,10 @@ if (is_compact) {
   }
 }
 
-sess._state           = { total_in, total_out, last_ctx: used_pct > 0 ? used_pct : last_ctx };
+sess._state           = { total_in, total_out, last_ctx: used_pct > 0 ? used_pct : last_ctx, custom_title, title_scan_offset };
 sess.model            = model;
 sess.last_activity_at = nowIso;
-if (sessionName) sess.session_name = sessionName;
+if (effectiveName) sess.session_name = effectiveName;
 data.sessions[sessionId] = sess;
 
 try { fs.writeFileSync(logFile, JSON.stringify(data, null, 2)); } catch(e) {}
