@@ -1,0 +1,64 @@
+/* --- Detail panel --- */
+#detail { flex: 1; overflow-y: auto; }
+.empty-state {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--muted);
+  flex-direction: column;
+  gap: var(--space-2);
+  font-size: var(--text-base);
+}
+
+/* Staggered fade-in on session switch */
+@keyframes fade-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.detail-header {
+  animation: fade-in 150ms ease;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+}
+.detail-header h2 { font-size: var(--text-lg); font-weight: 600; letter-spacing: var(--tracking-tight); }
+.detail-header p { font-size: var(--text-sm); color: var(--muted); margin-top: 3px; }
+.detail-stats {
+  animation: fade-in 150ms ease 40ms both;
+  display: flex;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+  padding: var(--space-2) var(--space-4);
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+}
+.ds-label { font-size: var(--text-xs); color: var(--muted); text-transform: uppercase; letter-spacing: var(--tracking-wide); font-weight: 500; }
+.ds-val { font-size: var(--text-md); font-weight: 600; margin-top: 1px; font-variant-numeric: tabular-nums; }
+.chart-section {
+  animation: fade-in 150ms ease 80ms both;
+  padding: var(--space-3) var(--space-4);
+  border-bottom: 1px solid var(--border);
+}
+.chart-section h3 {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  margin-bottom: var(--space-2);
+}
+.legend { display: flex; gap: var(--space-3); flex-wrap: wrap; margin-bottom: var(--space-2); font-size: var(--text-sm); color: var(--muted); }
+.dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 3px; vertical-align: middle; }
+.chart-wrap { position: relative; height: 150px; }
+.log-section {
+  animation: fade-in 150ms ease 120ms both;
+  padding: var(--space-3) var(--space-4) var(--space-6);
+}
+.log-section h3 {
+  font-size: var(--text-xs);
+  font-weight: 600;
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  margin-bottom: var(--space-2);
+}

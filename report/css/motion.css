@@ -1,0 +1,12 @@
+/* --- Accessibility: motion & transparency --- */
+@media (prefers-reduced-motion: reduce) {
+  .btn { transition: border-color 80ms, background 80ms, opacity 80ms; }
+  .btn:active { transform: none; }
+  .sess-item { transition: background 80ms; }
+  .modal-overlay { transition: opacity 100ms ease; }
+  .modal { transition: opacity 100ms ease; transform: none !important; }
+  .detail-header, .detail-stats, .chart-section, .log-section { animation: none; }
+}
+@media (prefers-reduced-transparency: reduce) {
+  #url-in:focus, .field input:focus { box-shadow: none; }
+}
