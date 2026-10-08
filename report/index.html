@@ -68,6 +68,8 @@
     .btn:hover { border-color: var(--accent); }
     .btn-primary { background: var(--accent); border-color: var(--accent); color: #fff; }
     .btn-primary:hover { opacity: 0.85; }
+    .btn-connected { border-color: var(--green); color: var(--green); }
+    .btn-connected:hover { background: rgba(63,185,80,0.1); }
     #url-in {
       padding: 5px 10px;
       border-radius: 6px;
@@ -75,7 +77,7 @@
       background: var(--surface);
       color: var(--text);
       font-size: 12px;
-      width: 260px;
+      width: 240px;
     }
     #stat-bar {
       display: grid;
@@ -83,70 +85,100 @@
       border-bottom: 1px solid var(--border);
       flex-shrink: 0;
     }
-    .stat {
-      padding: 8px 16px;
-      border-right: 1px solid var(--border);
-    }
+    .stat { padding: 8px 16px; border-right: 1px solid var(--border); }
     .stat:last-child { border-right: none; }
     .stat-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.4px; color: var(--muted); }
     .stat-val { font-size: 18px; font-weight: 700; margin-top: 1px; }
     #main { display: flex; flex: 1; overflow: hidden; }
-    #sessions {
-      width: 210px;
-      flex-shrink: 0;
-      border-right: 1px solid var(--border);
-      overflow-y: auto;
-    }
-    .sess-item {
-      padding: 10px 12px;
-      border-bottom: 1px solid var(--border);
-      cursor: pointer;
-      user-select: none;
-    }
+    #sessions { width: 210px; flex-shrink: 0; border-right: 1px solid var(--border); overflow-y: auto; }
+    .sess-item { padding: 10px 12px; border-bottom: 1px solid var(--border); cursor: pointer; user-select: none; }
     .sess-item:hover { background: var(--surface); }
     .sess-item.active { background: var(--surface2); border-left: 3px solid var(--accent); padding-left: 9px; }
     .sess-name { font-weight: 500; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
     .sess-meta { font-size: 11px; color: var(--muted); margin-top: 1px; }
     #detail { flex: 1; overflow-y: auto; }
-    .empty-state {
-      display: flex; align-items: center; justify-content: center;
-      height: 100%; color: var(--muted); flex-direction: column; gap: 8px;
-    }
+    .empty-state { display: flex; align-items: center; justify-content: center; height: 100%; color: var(--muted); flex-direction: column; gap: 8px; }
     .detail-header { padding: 14px 18px; border-bottom: 1px solid var(--border); }
     .detail-header h2 { font-size: 15px; font-weight: 600; }
     .detail-header p { font-size: 12px; color: var(--muted); margin-top: 3px; }
-    .detail-stats {
-      display: flex; gap: 24px; flex-wrap: wrap;
-      padding: 10px 18px;
-      background: var(--surface);
-      border-bottom: 1px solid var(--border);
-    }
+    .detail-stats { display: flex; gap: 24px; flex-wrap: wrap; padding: 10px 18px; background: var(--surface); border-bottom: 1px solid var(--border); }
     .ds-label { font-size: 10px; color: var(--muted); text-transform: uppercase; }
     .ds-val { font-size: 14px; font-weight: 600; }
     .chart-section { padding: 14px 18px; border-bottom: 1px solid var(--border); }
-    .chart-section h3 {
-      font-size: 11px; font-weight: 600; color: var(--muted);
-      text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 8px;
-    }
+    .chart-section h3 { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 8px; }
     .legend { display: flex; gap: 14px; flex-wrap: wrap; margin-bottom: 8px; font-size: 11px; color: var(--muted); }
     .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 3px; vertical-align: middle; }
     .chart-wrap { position: relative; height: 150px; }
     .log-section { padding: 14px 18px 24px; }
-    .log-section h3 {
-      font-size: 11px; font-weight: 600; color: var(--muted);
-      text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 10px;
-    }
+    .log-section h3 { font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 10px; }
     table.log { width: 100%; border-collapse: collapse; font-size: 12px; }
-    table.log th {
-      text-align: right; padding: 5px 8px;
-      border-bottom: 1px solid var(--border);
-      color: var(--muted); font-weight: 500; font-size: 11px;
-    }
+    table.log th { text-align: right; padding: 5px 8px; border-bottom: 1px solid var(--border); color: var(--muted); font-weight: 500; font-size: 11px; }
     table.log th:first-child, table.log th:nth-child(2) { text-align: left; }
     table.log td { text-align: right; padding: 4px 8px; border-bottom: 1px solid var(--border); }
     table.log td:first-child, table.log td:nth-child(2) { text-align: left; }
     table.log tr:last-child td { border-bottom: none; }
     .compact-row td { color: var(--orange); font-style: italic; }
+
+    /* ---- Modal ---- */
+    .modal-overlay {
+      display: none;
+      position: fixed; inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 100;
+      align-items: center;
+      justify-content: center;
+    }
+    .modal-overlay.open { display: flex; }
+    .modal {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      width: 420px;
+      max-width: calc(100vw - 32px);
+      padding: 24px;
+      position: relative;
+    }
+    .modal h2 { font-size: 15px; font-weight: 600; margin-bottom: 4px; }
+    .modal .subtitle { font-size: 12px; color: var(--muted); margin-bottom: 20px; }
+    .field { margin-bottom: 14px; }
+    .field label { display: block; font-size: 11px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 0.4px; margin-bottom: 5px; }
+    .field-row { display: flex; gap: 6px; }
+    .field input[type="text"],
+    .field input[type="password"] {
+      width: 100%;
+      padding: 7px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 13px;
+      font-family: inherit;
+    }
+    .field input:focus { outline: none; border-color: var(--accent); }
+    .field .hint { font-size: 11px; color: var(--muted); margin-top: 4px; }
+    .field .hint a { color: var(--accent); text-decoration: none; }
+    .field .hint a:hover { text-decoration: underline; }
+    .modal-actions { display: flex; gap: 8px; margin-top: 20px; align-items: center; }
+    .modal-actions .spacer { flex: 1; }
+    .btn-sm { padding: 6px 14px; font-size: 12px; }
+    .btn-danger { border-color: var(--red); color: var(--red); background: transparent; }
+    .btn-danger:hover { background: rgba(248,81,73,0.1); }
+    .modal-close { position: absolute; top: 14px; right: 14px; background: none; border: none; cursor: pointer; color: var(--muted); font-size: 18px; line-height: 1; padding: 2px 6px; border-radius: 4px; }
+    .modal-close:hover { background: var(--surface2); color: var(--text); }
+    #modal-status { font-size: 12px; margin-top: 12px; min-height: 18px; }
+    #modal-status.ok { color: var(--green); }
+    #modal-status.err { color: var(--red); }
+    .security-note {
+      margin-top: 18px;
+      padding: 10px 12px;
+      border-radius: 6px;
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .security-note strong { color: var(--text); }
   </style>
 </head>
 <body>
@@ -158,6 +190,7 @@
     <button class="btn" id="file-btn">Load file</button>
     <input type="text" id="url-in" placeholder="Raw JSON URL…">
     <button class="btn btn-primary" id="url-btn">Load URL</button>
+    <button class="btn" id="gh-btn" onclick="openModal()">&#128274; Private repo</button>
   </div>
 </header>
 
@@ -173,8 +206,60 @@
   <div id="detail"><div class="empty-state">Select a session</div></div>
 </div>
 
+<!-- Private repo modal -->
+<div class="modal-overlay" id="modal-overlay" onclick="e => { if (e.target===this) closeModal(); }">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+    <button class="modal-close" onclick="closeModal()" aria-label="Close">&times;</button>
+    <h2 id="modal-title">GitHub Private Repository</h2>
+    <p class="subtitle">Credentials stay in your browser only — never sent anywhere except GitHub's API.</p>
+
+    <div class="field">
+      <label>Personal Access Token</label>
+      <div class="field-row">
+        <input type="password" id="m-pat" placeholder="github_pat_…" autocomplete="off" spellcheck="false">
+        <button class="btn btn-sm" id="pat-toggle" onclick="togglePat()" style="flex-shrink:0">Show</button>
+      </div>
+      <p class="hint">
+        Create a <a href="https://github.com/settings/tokens?type=beta" target="_blank" rel="noopener">fine-grained PAT</a>
+        with <strong>Contents: Read-only</strong> on your private repo.
+      </p>
+    </div>
+
+    <div class="field">
+      <label>Repository</label>
+      <input type="text" id="m-repo" placeholder="owner/repo" autocomplete="off" spellcheck="false">
+    </div>
+
+    <div class="field">
+      <label>File path</label>
+      <input type="text" id="m-file" placeholder="sessions.json" autocomplete="off" spellcheck="false">
+      <p class="hint">Path of the JSON file inside the repository.</p>
+    </div>
+
+    <div id="modal-status"></div>
+
+    <div class="modal-actions">
+      <button class="btn btn-sm btn-danger" id="clear-btn" onclick="clearCredentials()" style="display:none">Clear credentials</button>
+      <div class="spacer"></div>
+      <button class="btn btn-sm" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-sm btn-primary" id="connect-btn" onclick="connectRepo()">Connect</button>
+    </div>
+
+    <div class="security-note">
+      <strong>Privacy:</strong> the PAT and repo path are stored in <code>localStorage</code> for this browser only.
+      They are used exclusively to call <code>api.github.com</code> — no other network requests are made.
+      Use a <strong>fine-grained PAT</strong> scoped to the single repo with read-only Contents access to limit exposure.
+    </div>
+  </div>
+</div>
+
 <script>
-// Token colors
+// ---- localStorage keys ----
+const LS_PAT  = 'statusline_pat';
+const LS_REPO = 'statusline_repo';
+const LS_FILE = 'statusline_file';
+
+// ---- Token colors ----
 const TC = {
   input:       '#60a5fa',
   cache_read:  '#4ade80',
@@ -186,7 +271,7 @@ let globalData = null;
 let tokChart = null;
 let ctxChart = null;
 
-// Chart.js plugin: vertical dashed lines at compact events
+// ---- Chart.js plugin: compact event vertical lines ----
 const compactPlugin = {
   id: 'compacts',
   afterDraw(chart) {
@@ -198,9 +283,7 @@ const compactPlugin = {
     ctx.setLineDash([4, 4]);
     ctx.lineWidth = 1.5;
     for (const xi of indices) {
-      const px = xi < chart.data.labels.length
-        ? scales.x.getPixelForValue(xi)
-        : chartArea.right;
+      const px = xi < chart.data.labels.length ? scales.x.getPixelForValue(xi) : chartArea.right;
       ctx.beginPath();
       ctx.moveTo(px, chartArea.top);
       ctx.lineTo(px, chartArea.bottom);
@@ -211,7 +294,7 @@ const compactPlugin = {
 };
 Chart.register(compactPlugin);
 
-// Helpers
+// ---- Helpers ----
 function fmtN(n) {
   if (n >= 1e9) return (n / 1e9).toFixed(1) + 'B';
   if (n >= 1e6) return (n / 1e6).toFixed(1) + 'M';
@@ -225,8 +308,6 @@ function fmtDur(a, b) {
   const m = Math.max(0, Math.round((new Date(b) - new Date(a)) / 60000));
   return m < 60 ? m + 'm' : Math.floor(m / 60) + 'h ' + (m % 60) + 'm';
 }
-
-// Remove consecutive entries with identical token values (streaming artifact)
 function dedupe(log) {
   const out = [];
   for (const e of log) {
@@ -241,7 +322,6 @@ function dedupe(log) {
   }
   return out;
 }
-
 function sessStats(sess) {
   const log = dedupe(sess.log || []);
   const exch = log.filter(e => !e.event);
@@ -253,7 +333,7 @@ function sessStats(sess) {
   return { log, exch, compacts, total, cacheHit };
 }
 
-// Data loading
+// ---- File loader ----
 document.getElementById('file-btn').onclick = () => document.getElementById('file-in').click();
 document.getElementById('file-in').addEventListener('change', e => {
   const f = e.target.files[0];
@@ -263,9 +343,10 @@ document.getElementById('file-in').addEventListener('change', e => {
   r.readAsText(f);
   e.target.value = '';
 });
+
+// ---- URL loader ----
 document.getElementById('url-btn').onclick = fetchUrl;
 document.getElementById('url-in').addEventListener('keydown', e => { if (e.key === 'Enter') fetchUrl(); });
-
 function fetchUrl() {
   const url = document.getElementById('url-in').value.trim();
   if (!url) return;
@@ -275,6 +356,7 @@ function fetchUrl() {
     .catch(err => alert('Failed to load: ' + err.message));
 }
 
+// ---- JSON ingestion ----
 function loadJson(text) {
   try {
     const d = JSON.parse(text);
@@ -286,13 +368,154 @@ function loadJson(text) {
   }
 }
 
-// Auto-load from ?data= query param (for hosted/GitHub Pages use)
+// ---- Auto-load from ?data= param ----
 (function() {
   const u = new URLSearchParams(location.search).get('data');
-  if (u) { document.getElementById('url-in').value = u; fetchUrl(); }
+  if (u) { document.getElementById('url-in').value = u; fetchUrl(); return; }
+  // Auto-load from saved private repo credentials
+  tryAutoLoad();
 })();
 
-// Render session list + summary bar
+// ---- Private repo: GitHub API fetch ----
+async function fetchFromGitHub(pat, repo, filePath) {
+  const path = filePath || 'sessions.json';
+  const url = `https://api.github.com/repos/${repo}/contents/${path}`;
+  const res = await fetch(url, {
+    headers: {
+      Authorization: `Bearer ${pat}`,
+      Accept: 'application/vnd.github.v3.raw',
+      'X-GitHub-Api-Version': '2022-11-28',
+    }
+  });
+  if (res.status === 401) throw new Error('Invalid token (401 Unauthorized)');
+  if (res.status === 403) throw new Error('Access denied (403 Forbidden) — check PAT permissions');
+  if (res.status === 404) throw new Error('Repository or file not found (404)');
+  if (!res.ok) throw new Error(`GitHub API error: ${res.status} ${res.statusText}`);
+  return res.text();
+}
+
+async function tryAutoLoad() {
+  let pat, repo, file;
+  try {
+    pat  = localStorage.getItem(LS_PAT);
+    repo = localStorage.getItem(LS_REPO);
+    file = localStorage.getItem(LS_FILE) || 'sessions.json';
+  } catch(e) { return; }
+  if (!pat || !repo) return;
+  updateGhButton(true);
+  try {
+    const text = await fetchFromGitHub(pat, repo, file);
+    loadJson(text);
+  } catch(e) {
+    updateGhButton(false);
+    console.warn('Auto-load from private repo failed:', e.message);
+  }
+}
+
+// ---- Modal ----
+function openModal() {
+  let pat = '', repo = '', file = '';
+  try {
+    pat  = localStorage.getItem(LS_PAT)  || '';
+    repo = localStorage.getItem(LS_REPO) || '';
+    file = localStorage.getItem(LS_FILE) || '';
+  } catch(e) {}
+  document.getElementById('m-pat').value  = pat;
+  document.getElementById('m-repo').value = repo;
+  document.getElementById('m-file').value = file;
+  document.getElementById('modal-status').textContent = '';
+  document.getElementById('modal-status').className = '';
+  document.getElementById('clear-btn').style.display = pat ? 'inline-flex' : 'none';
+  document.getElementById('modal-overlay').classList.add('open');
+  document.getElementById('m-pat').focus();
+}
+
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+}
+
+document.getElementById('modal-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('modal-overlay')) closeModal();
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Escape') closeModal();
+});
+
+function togglePat() {
+  const el = document.getElementById('m-pat');
+  const btn = document.getElementById('pat-toggle');
+  if (el.type === 'password') { el.type = 'text'; btn.textContent = 'Hide'; }
+  else { el.type = 'password'; btn.textContent = 'Show'; }
+}
+
+async function connectRepo() {
+  const pat  = document.getElementById('m-pat').value.trim();
+  const repo = document.getElementById('m-repo').value.trim();
+  const file = document.getElementById('m-file').value.trim() || 'sessions.json';
+  const statusEl = document.getElementById('modal-status');
+  const btn = document.getElementById('connect-btn');
+
+  if (!pat)  { setModalStatus('err', 'PAT is required.'); return; }
+  if (!repo || !repo.includes('/')) { setModalStatus('err', 'Repository must be in owner/repo format.'); return; }
+
+  btn.textContent = 'Connecting…';
+  btn.disabled = true;
+  setModalStatus('', '');
+
+  try {
+    const text = await fetchFromGitHub(pat, repo, file);
+    // Save to localStorage only after successful fetch
+    try {
+      localStorage.setItem(LS_PAT,  pat);
+      localStorage.setItem(LS_REPO, repo);
+      localStorage.setItem(LS_FILE, file);
+    } catch(e) {}
+    setModalStatus('ok', `Connected to ${repo}`);
+    document.getElementById('clear-btn').style.display = 'inline-flex';
+    updateGhButton(true);
+    loadJson(text);
+    setTimeout(closeModal, 800);
+  } catch(e) {
+    setModalStatus('err', e.message);
+  } finally {
+    btn.textContent = 'Connect';
+    btn.disabled = false;
+  }
+}
+
+function clearCredentials() {
+  if (!confirm('Remove saved credentials from this browser?')) return;
+  try {
+    localStorage.removeItem(LS_PAT);
+    localStorage.removeItem(LS_REPO);
+    localStorage.removeItem(LS_FILE);
+  } catch(e) {}
+  document.getElementById('m-pat').value  = '';
+  document.getElementById('m-repo').value = '';
+  document.getElementById('m-file').value = '';
+  document.getElementById('clear-btn').style.display = 'none';
+  updateGhButton(false);
+  setModalStatus('ok', 'Credentials cleared.');
+}
+
+function setModalStatus(type, msg) {
+  const el = document.getElementById('modal-status');
+  el.textContent = msg;
+  el.className = type;
+}
+
+function updateGhButton(connected) {
+  const btn = document.getElementById('gh-btn');
+  if (connected) {
+    btn.textContent = '🔒 Private repo ✓';
+    btn.classList.add('btn-connected');
+  } else {
+    btn.textContent = '🔒 Private repo';
+    btn.classList.remove('btn-connected');
+  }
+}
+
+// ---- Render ----
 function renderAll() {
   const sessions = Object.values(globalData.sessions)
     .sort((a, b) => new Date(b.last_activity_at) - new Date(a.last_activity_at));
@@ -302,13 +525,13 @@ function renderAll() {
     const st = sessStats(s);
     totalTok += st.total;
     totalComp += st.compacts;
-    totalCR += st.exch.reduce((x, e) => x + e.cache_read_tokens, 0);
-    totalIn += st.exch.reduce((x, e) => x + e.input_tokens + e.cache_read_tokens + e.cache_write_tokens, 0);
+    totalCR  += st.exch.reduce((x, e) => x + e.cache_read_tokens, 0);
+    totalIn  += st.exch.reduce((x, e) => x + e.input_tokens + e.cache_read_tokens + e.cache_write_tokens, 0);
   }
 
-  document.getElementById('s-count').textContent = sessions.length;
-  document.getElementById('s-tokens').textContent = fmtN(totalTok);
-  document.getElementById('s-cache').textContent = totalIn > 0 ? Math.round(totalCR / totalIn * 100) + '%' : '—';
+  document.getElementById('s-count').textContent    = sessions.length;
+  document.getElementById('s-tokens').textContent   = fmtN(totalTok);
+  document.getElementById('s-cache').textContent    = totalIn > 0 ? Math.round(totalCR / totalIn * 100) + '%' : '—';
   document.getElementById('s-compacts').textContent = totalComp;
 
   const list = document.getElementById('sessions');
@@ -332,7 +555,6 @@ function renderAll() {
   });
 }
 
-// Detail view
 function renderDetail(sess) {
   const st = sessStats(sess);
   const detail = document.getElementById('detail');
@@ -373,8 +595,7 @@ function renderDetail(sess) {
 }
 
 function buildLogTable(log) {
-  let rows = '';
-  let i = 0;
+  let rows = '', i = 0;
   for (const e of log) {
     if (e.event === 'compact') {
       rows += `<tr class="compact-row"><td colspan="8">⚡ Compact — context reset to ${e.context_pct}%</td></tr>`;
@@ -382,22 +603,15 @@ function buildLogTable(log) {
       i++;
       const t = e.input_tokens + e.cache_read_tokens + e.cache_write_tokens + e.output_tokens;
       rows += `<tr>
-        <td>${i}</td>
-        <td>${fmtDt(e.at)}</td>
-        <td>${fmtN(e.input_tokens)}</td>
-        <td>${fmtN(e.cache_read_tokens)}</td>
-        <td>${fmtN(e.cache_write_tokens)}</td>
-        <td>${fmtN(e.output_tokens)}</td>
-        <td>${fmtN(t)}</td>
-        <td>${e.context_pct}%</td>
+        <td>${i}</td><td>${fmtDt(e.at)}</td>
+        <td>${fmtN(e.input_tokens)}</td><td>${fmtN(e.cache_read_tokens)}</td>
+        <td>${fmtN(e.cache_write_tokens)}</td><td>${fmtN(e.output_tokens)}</td>
+        <td>${fmtN(t)}</td><td>${e.context_pct}%</td>
       </tr>`;
     }
   }
   return `<table class="log">
-    <thead><tr>
-      <th>#</th><th>Time</th>
-      <th>Input</th><th>Cache rd</th><th>Cache wr</th><th>Output</th><th>Total</th><th>Ctx</th>
-    </tr></thead>
+    <thead><tr><th>#</th><th>Time</th><th>Input</th><th>Cache rd</th><th>Cache wr</th><th>Output</th><th>Total</th><th>Ctx</th></tr></thead>
     <tbody>${rows}</tbody>
   </table>`;
 }
@@ -406,28 +620,21 @@ function buildCharts(log) {
   if (tokChart) { tokChart.destroy(); tokChart = null; }
   if (ctxChart) { ctxChart.destroy(); ctxChart = null; }
 
-  const labels = [], inp = [], cr = [], cw = [], out = [], ctxArr = [];
-  const compactXs = [];
+  const labels = [], inp = [], cr = [], cw = [], out = [], ctxArr = [], compactXs = [];
   let xi = 0;
-
   for (const e of log) {
-    if (e.event === 'compact') {
-      compactXs.push(xi);
-    } else {
+    if (e.event === 'compact') { compactXs.push(xi); }
+    else {
       labels.push(xi + 1);
-      inp.push(e.input_tokens);
-      cr.push(e.cache_read_tokens);
-      cw.push(e.cache_write_tokens);
-      out.push(e.output_tokens);
-      ctxArr.push(e.context_pct);
-      xi++;
+      inp.push(e.input_tokens); cr.push(e.cache_read_tokens);
+      cw.push(e.cache_write_tokens); out.push(e.output_tokens);
+      ctxArr.push(e.context_pct); xi++;
     }
   }
 
   const dark = window.matchMedia('(prefers-color-scheme: dark)').matches;
   const grid = dark ? 'rgba(255,255,255,0.07)' : 'rgba(0,0,0,0.07)';
   const tick = dark ? '#8b949e' : '#656d76';
-
   const baseScales = {
     x: { ticks: { color: tick, font: { size: 10 }, maxTicksLimit: 15 }, grid: { color: grid } },
     y: { ticks: { color: tick, font: { size: 10 } }, grid: { color: grid } }
@@ -435,28 +642,16 @@ function buildCharts(log) {
 
   tokChart = new Chart(document.getElementById('c-tok'), {
     type: 'bar',
-    data: {
-      labels,
-      datasets: [
-        { label: 'Input',       data: inp, backgroundColor: TC.input,       stack: 's' },
-        { label: 'Cache read',  data: cr,  backgroundColor: TC.cache_read,  stack: 's' },
-        { label: 'Cache write', data: cw,  backgroundColor: TC.cache_write, stack: 's' },
-        { label: 'Output',      data: out, backgroundColor: TC.output,      stack: 's' },
-      ]
-    },
+    data: { labels, datasets: [
+      { label: 'Input',       data: inp, backgroundColor: TC.input,       stack: 's' },
+      { label: 'Cache read',  data: cr,  backgroundColor: TC.cache_read,  stack: 's' },
+      { label: 'Cache write', data: cw,  backgroundColor: TC.cache_write, stack: 's' },
+      { label: 'Output',      data: out, backgroundColor: TC.output,      stack: 's' },
+    ]},
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: false,
-      plugins: {
-        legend: { display: false },
-        compacts: { indices: compactXs },
-        tooltip: {
-          callbacks: {
-            footer: items => 'Total: ' + fmtN(items.reduce((s, i) => s + i.raw, 0))
-          }
-        }
-      },
+      responsive: true, maintainAspectRatio: false, animation: false,
+      plugins: { legend: { display: false }, compacts: { indices: compactXs },
+        tooltip: { callbacks: { footer: items => 'Total: ' + fmtN(items.reduce((s, i) => s + i.raw, 0)) } } },
       scales: {
         x: { ...baseScales.x, stacked: true },
         y: { ...baseScales.y, stacked: true, ticks: { ...baseScales.y.ticks, callback: v => fmtN(v) } }
@@ -466,36 +661,18 @@ function buildCharts(log) {
 
   ctxChart = new Chart(document.getElementById('c-ctx'), {
     type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        label: 'Context %',
-        data: ctxArr,
-        borderColor: '#60a5fa',
-        backgroundColor: 'rgba(96,165,250,0.1)',
-        borderWidth: 2,
-        pointRadius: 3,
-        fill: true,
-        tension: 0.3,
-      }]
-    },
+    data: { labels, datasets: [{
+      label: 'Context %', data: ctxArr,
+      borderColor: '#60a5fa', backgroundColor: 'rgba(96,165,250,0.1)',
+      borderWidth: 2, pointRadius: 3, fill: true, tension: 0.3,
+    }]},
     options: {
-      responsive: true,
-      maintainAspectRatio: false,
-      animation: false,
-      plugins: {
-        legend: { display: false },
-        compacts: { indices: compactXs },
-        tooltip: { callbacks: { label: item => 'Context: ' + item.raw + '%' } }
-      },
+      responsive: true, maintainAspectRatio: false, animation: false,
+      plugins: { legend: { display: false }, compacts: { indices: compactXs },
+        tooltip: { callbacks: { label: item => 'Context: ' + item.raw + '%' } } },
       scales: {
         x: { ...baseScales.x },
-        y: {
-          ...baseScales.y,
-          min: 0,
-          max: 100,
-          ticks: { ...baseScales.y.ticks, callback: v => v + '%' }
-        }
+        y: { ...baseScales.y, min: 0, max: 100, ticks: { ...baseScales.y.ticks, callback: v => v + '%' } }
       }
     }
   });
