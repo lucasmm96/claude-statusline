@@ -29,6 +29,10 @@
     <input type="text" id="url-in" placeholder="Raw JSON URL…">
     <button class="btn btn-primary" id="url-btn">Load URL</button>
     <button class="btn" id="gh-btn" onclick="openModal()">&#128274; Private repo</button>
+    <div id="refresh-indicator" hidden aria-live="polite" aria-atomic="true">
+      <span class="ri-dot"></span>
+      <span class="ri-text"></span>
+    </div>
   </div>
 </header>
 
@@ -119,6 +123,7 @@
 <script src="js/charts.js"></script>
 <script src="js/log-table.js"></script>
 <script src="js/render.js"></script>
+<script src="js/auto-refresh.js"></script>
 <script src="js/loaders.js"></script>
 <script src="js/github.js"></script>
 <script src="js/daily-chart.js"></script>

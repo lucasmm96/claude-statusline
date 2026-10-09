@@ -1,4 +1,8 @@
 // ---- Render ----
+let activeSessId     = null;
+let activeSessLogLen = 0;
+let activeSessLastAt = '';
+
 function renderAll() {
   const sessions = Object.values(globalData.sessions)
     .sort((a, b) => new Date(b.last_activity_at) - new Date(a.last_activity_at));
@@ -6,10 +10,10 @@ function renderAll() {
   let totalTok = 0, totalComp = 0, totalCR = 0, totalIn = 0;
   for (const s of sessions) {
     const st = sessStats(s);
-    totalTok += st.total;
+    totalTok  += st.total;
     totalComp += st.compacts;
-    totalCR  += st.exch.reduce((x, e) => x + e.cache_read_tokens, 0);
-    totalIn  += st.exch.reduce((x, e) => x + e.input_tokens + e.cache_read_tokens + e.cache_write_tokens, 0);
+    totalCR   += st.exch.reduce((x, e) => x + e.cache_read_tokens, 0);
+    totalIn   += st.exch.reduce((x, e) => x + e.input_tokens + e.cache_read_tokens + e.cache_write_tokens, 0);
   }
 
   document.getElementById('s-count').textContent    = sessions.length;
@@ -17,10 +21,17 @@ function renderAll() {
   document.getElementById('s-cache').textContent    = totalIn > 0 ? Math.round(totalCR / totalIn * 100) + '%' : '—';
   document.getElementById('s-compacts').textContent = totalComp;
 
-  initDailySection();
+  // Snapshot of active state before DOM rebuild
+  const prevId     = activeSessId;
+  const prevLogLen = activeSessLogLen;
+  const prevLastAt = activeSessLastAt;
+  const detailEl   = document.getElementById('detail');
+  const prevScroll = detailEl ? detailEl.scrollTop : 0;
 
   const list = document.getElementById('sessions');
   list.innerHTML = '';
+  let activeItem = null;
+
   sessions.forEach((sess, i) => {
     const st = sessStats(sess);
     const el = document.createElement('div');
@@ -33,15 +44,49 @@ function renderAll() {
     el.onclick = () => {
       document.querySelectorAll('.sess-item').forEach(x => x.classList.remove('active'));
       el.classList.add('active');
+      activeSessId = sess.session_id;
       renderDetail(sess);
     };
     list.appendChild(el);
-    if (i === 0) { el.classList.add('active'); renderDetail(sess); }
+
+    // Restore or default active item
+    if (prevId ? sess.session_id === prevId : i === 0) {
+      el.classList.add('active');
+      activeItem = { el, sess };
+    }
   });
+
+  // Fallback: first session if prev selection not found
+  if (!activeItem && sessions.length) {
+    const firstEl = list.querySelector('.sess-item');
+    if (firstEl) { firstEl.classList.add('active'); activeItem = { el: firstEl, sess: sessions[0] }; }
+  }
+
+  if (activeItem) {
+    const { sess } = activeItem;
+    activeSessId = sess.session_id;
+
+    // Only re-render detail if this session's data changed
+    const dataChanged = !prevId ||
+      sess.last_activity_at !== prevLastAt ||
+      (sess.log || []).length !== prevLogLen;
+
+    if (dataChanged) {
+      renderDetail(sess);
+    } else {
+      if (detailEl) detailEl.scrollTop = prevScroll;
+    }
+  }
+
+  initDailySection();
 }
 
 function renderDetail(sess) {
-  const st = sessStats(sess);
+  // Track for change detection on next renderAll
+  activeSessLogLen = (sess.log || []).length;
+  activeSessLastAt = sess.last_activity_at || '';
+
+  const st     = sessStats(sess);
   const detail = document.getElementById('detail');
 
   detail.innerHTML = `

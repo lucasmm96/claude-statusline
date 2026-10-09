@@ -27,7 +27,7 @@ async function tryAutoLoad() {
   updateGhButton(true);
   try {
     const text = await fetchFromGitHub(pat, repo, file);
-    loadJson(text);
+    loadJson(text, { type: 'github', pat, repo, file });
   } catch(e) {
     updateGhButton(false);
     console.warn('Auto-load from private repo failed:', e.message);
@@ -88,7 +88,7 @@ async function connectRepo() {
     setModalStatus('ok', `Connected to ${repo}`);
     document.getElementById('clear-btn').style.display = 'inline-flex';
     updateGhButton(true);
-    loadJson(text);
+    loadJson(text, { type: 'github', pat, repo, file });
     setTimeout(closeModal, 800);
   } catch(e) {
     setModalStatus('err', e.message);

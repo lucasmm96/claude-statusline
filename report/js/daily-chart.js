@@ -1,5 +1,8 @@
 let dailyChart = null;
 let activeRange = 5;
+let currentDateFrom = '';
+let currentDateTo = '';
+let dailySectionInitialized = false;
 
 function computeDailyTotals(range, fromDate, toDate) {
   const byDay = {};
@@ -70,22 +73,11 @@ function renderDailyChart(range, fromDate, toDate) {
       animation: { duration: 180 },
       plugins: {
         legend: { display: false },
-        tooltip: {
-          callbacks: {
-            label: item => fmtN(item.raw) + ' tokens'
-          }
-        }
+        tooltip: { callbacks: { label: item => fmtN(item.raw) + ' tokens' } }
       },
       scales: {
-        x: {
-          ticks: { color: tickColor, font: { size: 10 }, maxTicksLimit: 20 },
-          grid: { color: gridColor }
-        },
-        y: {
-          ticks: { color: tickColor, font: { size: 10 }, callback: v => fmtN(v) },
-          grid: { color: gridColor },
-          beginAtZero: true
-        }
+        x: { ticks: { color: tickColor, font: { size: 10 }, maxTicksLimit: 20 }, grid: { color: gridColor } },
+        y: { ticks: { color: tickColor, font: { size: 10 }, callback: v => fmtN(v) }, grid: { color: gridColor }, beginAtZero: true }
       }
     }
   });
@@ -98,8 +90,9 @@ function setRange(range) {
   });
   const customDates = document.querySelector('.custom-dates');
   customDates.hidden = range !== 'custom';
-
   if (range !== 'custom') {
+    currentDateFrom = '';
+    currentDateTo = '';
     renderDailyChart(range === 0 || range === '0' ? 0 : Number(range));
   }
 }
@@ -107,12 +100,23 @@ function setRange(range) {
 function applyCustomRange() {
   const from = document.getElementById('date-from').value;
   const to   = document.getElementById('date-to').value;
-  if (from && to && from <= to) renderDailyChart('custom', from, to);
+  if (from && to && from <= to) {
+    currentDateFrom = from;
+    currentDateTo   = to;
+    renderDailyChart('custom', from, to);
+  }
 }
 
 function initDailySection() {
   const section = document.getElementById('daily-section');
   section.hidden = false;
+
+  if (dailySectionInitialized) {
+    renderDailyChart(activeRange, currentDateFrom, currentDateTo);
+    return;
+  }
+
+  dailySectionInitialized = true;
 
   document.querySelectorAll('.range-btn').forEach(btn => {
     btn.onclick = () => setRange(btn.dataset.range === '0' ? 0 : btn.dataset.range);
@@ -122,11 +126,13 @@ function initDailySection() {
   const pad   = n => String(n).padStart(2, '0');
   const toISO = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
   const from30 = new Date(today.getFullYear(), today.getMonth(), today.getDate() - 29);
-  document.getElementById('date-from').value = toISO(from30);
-  document.getElementById('date-to').value   = toISO(today);
+  currentDateFrom = toISO(from30);
+  currentDateTo   = toISO(today);
+  document.getElementById('date-from').value = currentDateFrom;
+  document.getElementById('date-to').value   = currentDateTo;
 
   document.getElementById('date-from').onchange = applyCustomRange;
   document.getElementById('date-to').onchange   = applyCustomRange;
 
-  renderDailyChart(5);
+  renderDailyChart(activeRange);
 }
