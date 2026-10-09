@@ -39,12 +39,12 @@ function renderDailyChart(range, fromDate, toDate) {
   if (dailyChart) { dailyChart.destroy(); dailyChart = null; }
 
   if (!entries.length) {
-    emptyEl.hidden = false;
+    emptyEl.style.display = 'flex';
     canvasEl.style.display = 'none';
     return;
   }
 
-  emptyEl.hidden = true;
+  emptyEl.style.display = 'none';
   canvasEl.style.display = '';
 
   const dark = window.matchMedia('(prefers-color-scheme: dark)').matches ||
