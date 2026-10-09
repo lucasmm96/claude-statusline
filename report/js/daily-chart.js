@@ -40,12 +40,12 @@ function renderDailyChart(range, fromDate, toDate) {
 
   if (!entries.length) {
     emptyEl.hidden = false;
-    canvasEl.style.visibility = 'hidden';
+    canvasEl.style.display = 'none';
     return;
   }
 
   emptyEl.hidden = true;
-  canvasEl.style.visibility = '';
+  canvasEl.style.display = '';
 
   const dark = window.matchMedia('(prefers-color-scheme: dark)').matches ||
     document.documentElement.dataset.theme === 'dark';
