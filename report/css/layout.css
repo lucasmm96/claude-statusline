@@ -80,6 +80,66 @@ h1 { font-size: var(--text-lg); font-weight: 600; letter-spacing: var(--tracking
   line-height: 1.1;
 }
 
+/* --- Daily spending section --- */
+#daily-section {
+  border-bottom: 1px solid var(--border);
+  padding: var(--space-3) var(--space-4);
+  flex-shrink: 0;
+}
+.daily-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--space-3);
+  flex-wrap: wrap;
+  gap: var(--space-2);
+}
+.daily-header h2 {
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--muted);
+}
+.date-filter { display: flex; align-items: center; gap: var(--space-1); flex-wrap: wrap; }
+.range-btn {
+  padding: 3px var(--space-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: transparent;
+  color: var(--muted);
+  font-size: var(--text-xs);
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 120ms, background 120ms, color 120ms;
+}
+.range-btn:hover { border-color: var(--accent); color: var(--text); }
+.range-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
+.custom-dates { display: flex; align-items: center; gap: var(--space-1); margin-left: var(--space-1); }
+.custom-dates input[type="date"] {
+  padding: 3px var(--space-2);
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--surface);
+  color: var(--text);
+  font-size: var(--text-xs);
+  font-family: inherit;
+  transition: border-color 120ms;
+  color-scheme: dark light;
+}
+.custom-dates input[type="date"]:focus { outline: none; border-color: var(--accent); }
+.date-sep { color: var(--muted); font-size: var(--text-xs); }
+.daily-chart-wrap { position: relative; height: 140px; }
+.daily-empty {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  font-size: var(--text-sm);
+}
+
 /* --- Layout --- */
 #main { display: flex; flex: 1; overflow: hidden; }
 #sessions { width: 220px; flex-shrink: 0; border-right: 1px solid var(--border); overflow-y: auto; }

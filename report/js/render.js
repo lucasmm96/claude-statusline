@@ -17,6 +17,8 @@ function renderAll() {
   document.getElementById('s-cache').textContent    = totalIn > 0 ? Math.round(totalCR / totalIn * 100) + '%' : '—';
   document.getElementById('s-compacts').textContent = totalComp;
 
+  initDailySection();
+
   const list = document.getElementById('sessions');
   list.innerHTML = '';
   sessions.forEach((sess, i) => {

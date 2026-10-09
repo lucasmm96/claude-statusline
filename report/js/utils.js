@@ -26,6 +26,10 @@ function dedupe(log) {
   }
   return out;
 }
+function fmtDay(dateStr) {
+  const [y, m, d] = dateStr.split('-').map(Number);
+  return new Date(y, m - 1, d).toLocaleString(undefined, { month: 'short', day: 'numeric' });
+}
 function sessStats(sess) {
   const log = dedupe(sess.log || []);
   const exch = log.filter(e => !e.event);
