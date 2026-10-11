@@ -137,7 +137,7 @@ function openPricingModal() {
   optg.label = 'Add new';
   const opt = document.createElement('option');
   opt.value = '__new__';
-  opt.textContent = 'Otro / Add manually';
+  opt.textContent = 'Other / Add manually';
   optg.appendChild(opt);
   select.appendChild(optg);
 
