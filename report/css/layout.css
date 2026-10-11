@@ -96,6 +96,7 @@ h1 { font-size: var(--text-lg); font-weight: 600; letter-spacing: var(--tracking
   border-bottom: 1px solid var(--border);
   flex-shrink: 0;
 }
+#stat-bar.has-cost { grid-template-columns: repeat(5, 1fr); }
 .stat { padding: var(--space-2) var(--space-4); border-right: 1px solid var(--border); }
 .stat:last-child { border-right: none; }
 .stat-label {

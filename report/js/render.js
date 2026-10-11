@@ -21,6 +21,19 @@ function renderAll() {
   document.getElementById('s-cache').textContent    = totalIn > 0 ? Math.round(totalCR / totalIn * 100) + '%' : '—';
   document.getElementById('s-compacts').textContent = totalComp;
 
+  const pricing = getPricing();
+  const costStat = document.getElementById('s-cost-stat');
+  const statBar  = document.getElementById('stat-bar');
+  if (pricing) {
+    const cost = calcCost(globalData.sessions, pricing);
+    document.getElementById('s-cost').textContent = fmtCost(cost);
+    costStat.style.display = '';
+    statBar.classList.add('has-cost');
+  } else {
+    costStat.style.display = 'none';
+    statBar.classList.remove('has-cost');
+  }
+
   // Snapshot of active state before DOM rebuild
   const prevId     = activeSessId;
   const prevLogLen = activeSessLogLen;
