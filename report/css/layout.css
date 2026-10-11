@@ -114,6 +114,13 @@ h1 { font-size: var(--text-lg); font-weight: 600; letter-spacing: var(--tracking
   letter-spacing: var(--tracking-tight);
   line-height: 1.1;
 }
+.cost-warning {
+  display: block;
+  font-size: var(--text-sm);
+  font-weight: 500;
+  color: var(--orange);
+  margin-top: 3px;
+}
 
 /* --- Daily spending section --- */
 #daily-section {

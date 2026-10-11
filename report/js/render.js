@@ -26,7 +26,10 @@ function renderAll() {
   const statBar  = document.getElementById('stat-bar');
   if (pricing) {
     const cost = calcCost(globalData.sessions, pricing);
-    document.getElementById('s-cost').textContent = fmtCost(cost);
+    const unpriced = calcUnpricedTokens(globalData.sessions, pricing);
+    let costText = fmtCost(cost);
+    if (unpriced > 0) costText += ` <span class="cost-warning">⚠ ${fmtN(unpriced)} unpriced</span>`;
+    document.getElementById('s-cost').innerHTML = costText;
     costStat.style.display = '';
     statBar.classList.add('has-cost');
   } else {

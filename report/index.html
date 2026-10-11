@@ -77,29 +77,49 @@
   <div class="modal" role="dialog" aria-modal="true" aria-labelledby="pricing-modal-title">
     <button class="modal-close" onclick="closePricingModal()" aria-label="Close">&times;</button>
     <h2 id="pricing-modal-title">Token Pricing</h2>
-    <p class="subtitle">Prices in USD per million tokens. All fields are optional — leave blank to exclude that type.</p>
+    <p class="subtitle">Set prices per model (USD per million tokens). Models without prices don't contribute to cost estimates.</p>
+
+    <div class="field">
+      <label>Model</label>
+      <select id="p-model-select"></select>
+    </div>
+
+    <div class="field" id="p-model-name-field" style="display:none">
+      <label>Model name</label>
+      <input type="text" id="p-model-name" placeholder="e.g. Custom Model" autocomplete="off" spellcheck="false">
+    </div>
+
+    <div class="field" id="p-model-display-field" style="display:none">
+      <label>Editing</label>
+      <div id="p-model-display" style="padding:7px var(--space-2); background:var(--surface); border-radius:var(--radius-md); font-weight:500"></div>
+    </div>
 
     <div class="price-grid">
       <div class="field">
         <label>Input ($/MTok)</label>
-        <input type="number" id="p-input" min="0" step="0.01" placeholder="e.g. 3.00">
+        <input type="number" id="p-input" min="0" step="0.01" placeholder="0.00">
       </div>
       <div class="field">
         <label>Cache read ($/MTok)</label>
-        <input type="number" id="p-cr" min="0" step="0.01" placeholder="e.g. 0.30">
+        <input type="number" id="p-cr" min="0" step="0.01" placeholder="0.00">
       </div>
       <div class="field">
         <label>Cache write ($/MTok)</label>
-        <input type="number" id="p-cw" min="0" step="0.01" placeholder="e.g. 3.75">
+        <input type="number" id="p-cw" min="0" step="0.01" placeholder="0.00">
       </div>
       <div class="field">
         <label>Output ($/MTok)</label>
-        <input type="number" id="p-output" min="0" step="0.01" placeholder="e.g. 15.00">
+        <input type="number" id="p-output" min="0" step="0.01" placeholder="0.00">
       </div>
     </div>
 
+    <div class="field">
+      <label>Configured models</label>
+      <div id="p-configured-list" style="display:flex; flex-direction:column; gap:var(--space-1)"></div>
+    </div>
+
     <div class="modal-actions">
-      <button class="btn btn-sm btn-danger" id="p-clear-btn" onclick="clearPrices()" style="display:none">Clear prices</button>
+      <button class="btn btn-sm btn-danger" id="p-clear-btn" onclick="clearPrices()" style="display:none">Clear all</button>
       <div class="spacer"></div>
       <button class="btn btn-sm" onclick="closePricingModal()">Cancel</button>
       <button class="btn btn-sm btn-primary" onclick="savePrices()">Save</button>
