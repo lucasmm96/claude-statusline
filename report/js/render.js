@@ -1,7 +1,8 @@
 // ---- Render ----
-let activeSessId     = null;
-let activeSessLogLen = 0;
-let activeSessLastAt = '';
+let activeSessId      = null;
+let activeSessLogLen  = 0;
+let activeSessLastAt  = '';
+let activePricingJson = null;
 
 function renderAll() {
   const sessions = Object.values(globalData.sessions)
@@ -82,10 +83,13 @@ function renderAll() {
     const { sess } = activeItem;
     activeSessId = sess.session_id;
 
-    // Only re-render detail if this session's data changed
+    // Only re-render detail if this session's data or pricing changed
+    const currentPricingJson = JSON.stringify(getPricing());
     const dataChanged = !prevId ||
       sess.last_activity_at !== prevLastAt ||
-      (sess.log || []).length !== prevLogLen;
+      (sess.log || []).length !== prevLogLen ||
+      currentPricingJson !== activePricingJson;
+    activePricingJson = currentPricingJson;
 
     if (dataChanged) {
       renderDetail(sess);
