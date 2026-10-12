@@ -47,6 +47,26 @@ function renderDailyChart(range, fromDate, toDate) {
   emptyEl.style.display = 'none';
   canvasEl.style.display = '';
 
+  const pricingData = getPricing();
+  let dailyCosts = null;
+
+  if (pricingData) {
+    const costByDay = {};
+    for (const sess of Object.values(globalData.sessions)) {
+      const modelPrice = pricingData.prices[sess.model || ''] || pricingData._default;
+      for (const e of dedupe(sess.log || [])) {
+        if (e.event || !e.at) continue;
+        const day = e.at.slice(0, 10);
+        costByDay[day] = (costByDay[day] || 0)
+          + (e.input_tokens        || 0) / 1e6 * modelPrice.input
+          + (e.cache_read_tokens   || 0) / 1e6 * modelPrice.cacheRead
+          + (e.cache_write_tokens  || 0) / 1e6 * modelPrice.cacheWrite
+          + (e.output_tokens       || 0) / 1e6 * modelPrice.output;
+      }
+    }
+    dailyCosts = entries.map(([d]) => costByDay[d] || 0);
+  }
+
   const dark = window.matchMedia('(prefers-color-scheme: dark)').matches ||
     document.documentElement.dataset.theme === 'dark';
   const gridColor = dark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)';
@@ -73,7 +93,16 @@ function renderDailyChart(range, fromDate, toDate) {
       animation: { duration: 180 },
       plugins: {
         legend: { display: false },
-        tooltip: { callbacks: { label: item => fmtN(item.raw) + ' tokens' } }
+        tooltip: {
+          callbacks: {
+            label: item => {
+              const base = fmtN(item.raw) + ' tokens';
+              if (!dailyCosts) return base;
+              const cost = dailyCosts[item.dataIndex];
+              return cost > 0 ? base + ' · ' + fmtCost(cost) : base;
+            }
+          }
+        }
       },
       scales: {
         x: { ticks: { color: tickColor, font: { size: 10 }, maxTicksLimit: 20 }, grid: { color: gridColor } },
