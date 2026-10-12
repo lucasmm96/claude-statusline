@@ -125,7 +125,7 @@ function updateGhButton(connected) {
     btn.textContent = '🔒 Private repo ✓';
     btn.classList.add('btn-connected');
   } else {
-    btn.textContent = '🔒 Private repo';
+    btn.textContent = 'Private repo';
     btn.classList.remove('btn-connected');
   }
 }

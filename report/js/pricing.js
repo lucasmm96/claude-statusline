@@ -212,10 +212,10 @@ function updatePricingButton() {
   const btn = document.getElementById('pricing-btn');
   if (!btn) return;
   if (getPricing()) {
-    btn.textContent = '$ Pricing ✓';
+    btn.textContent = '🪙 Pricing ✓';
     btn.classList.add('btn-connected');
   } else {
-    btn.textContent = '$ Pricing';
+    btn.textContent = 'Pricing';
     btn.classList.remove('btn-connected');
   }
 }
