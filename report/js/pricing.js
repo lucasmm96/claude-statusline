@@ -208,6 +208,18 @@ function closePricingModal() {
   document.getElementById('pricing-modal-overlay').classList.remove('open');
 }
 
+function updatePricingButton() {
+  const btn = document.getElementById('pricing-btn');
+  if (!btn) return;
+  if (getPricing()) {
+    btn.textContent = '$ Pricing ✓';
+    btn.classList.add('btn-connected');
+  } else {
+    btn.textContent = '$ Pricing';
+    btn.classList.remove('btn-connected');
+  }
+}
+
 function savePrices() {
   const select = document.getElementById('p-model-select');
   const pIn  = parseFloat(document.getElementById('p-input').value) || 0;
@@ -224,6 +236,7 @@ function savePrices() {
   const data = getPricingData();
   data.prices[modelName] = { input: pIn, cacheRead: pCR, cacheWrite: pCW, output: pOut };
   savePricingData(data);
+  updatePricingButton();
 
   select.value = modelName;
   loadModelPrices();
@@ -236,6 +249,7 @@ function clearPrices() {
   try {
     localStorage.removeItem('statusline_pricing');
   } catch(e) {}
+  updatePricingButton();
   closePricingModal();
   if (globalData) renderAll();
 }
@@ -245,6 +259,7 @@ if (typeof document !== 'undefined') {
   document.addEventListener('DOMContentLoaded', () => {
     const select = document.getElementById('p-model-select');
     if (select) select.addEventListener('change', loadModelPrices);
+    updatePricingButton();
   });
 }
 
