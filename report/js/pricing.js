@@ -259,12 +259,12 @@ if (typeof document !== 'undefined') {
   document.addEventListener('DOMContentLoaded', () => {
     const select = document.getElementById('p-model-select');
     if (select) select.addEventListener('change', loadModelPrices);
-    updatePricingButton();
   });
 }
 
 // Overlay click + focus trap (only in browser)
 if (typeof document !== 'undefined') {
+  updatePricingButton();
   document.getElementById('pricing-modal-overlay').addEventListener('click', e => {
     if (e.target === document.getElementById('pricing-modal-overlay')) closePricingModal();
   });
