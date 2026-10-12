@@ -105,6 +105,11 @@ function renderDetail(sess) {
   const st     = sessStats(sess);
   const detail = document.getElementById('detail');
 
+  const pricing = getPricing();
+  const modelPrice = pricing
+    ? (pricing.prices[sess.model || ''] || pricing._default)
+    : null;
+
   detail.innerHTML = `
     <div class="detail-header">
       <h2>${sess.session_name || sess.session_id}</h2>
@@ -133,7 +138,7 @@ function renderDetail(sess) {
     </div>
     <div class="log-section">
       <h3>Exchange Log</h3>
-      ${buildLogTable(st.log)}
+      ${buildLogTable(st.log, modelPrice)}
     </div>
   `;
 
