@@ -1,3 +1,8 @@
+function localDateStr(d) {
+  const dt = typeof d === 'string' ? new Date(d) : d;
+  return `${dt.getFullYear()}-${String(dt.getMonth()+1).padStart(2,'0')}-${String(dt.getDate()).padStart(2,'0')}`;
+}
+
 let dailyChart = null;
 let activeRange = 5;
 let currentDateFrom = '';
@@ -9,7 +14,7 @@ function computeDailyTotals(range, fromDate, toDate) {
   for (const sess of Object.values(globalData.sessions)) {
     for (const e of (sess.log || [])) {
       if (e.event || !e.at) continue;
-      const day = e.at.slice(0, 10);
+      const day = localDateStr(e.at);
       byDay[day] = (byDay[day] || 0) +
         e.input_tokens + e.cache_read_tokens + e.cache_write_tokens + e.output_tokens;
     }
@@ -22,7 +27,7 @@ function computeDailyTotals(range, fromDate, toDate) {
   } else if (range > 0) {
     const today = new Date();
     const cutoff = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (range - 1));
-    const cutoffStr = cutoff.toISOString().slice(0, 10);
+    const cutoffStr = localDateStr(cutoff);
     entries = entries.filter(([d]) => d >= cutoffStr);
   }
 
@@ -56,7 +61,7 @@ function renderDailyChart(range, fromDate, toDate) {
       const modelPrice = pricingData.prices[sess.model || ''] || pricingData._default;
       for (const e of dedupe(sess.log || [])) {
         if (e.event || !e.at) continue;
-        const day = e.at.slice(0, 10);
+        const day = localDateStr(e.at);
         costByDay[day] = (costByDay[day] || 0)
           + (e.input_tokens        || 0) / 1e6 * modelPrice.input
           + (e.cache_read_tokens   || 0) / 1e6 * modelPrice.cacheRead
