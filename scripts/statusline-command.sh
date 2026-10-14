@@ -13,11 +13,7 @@ CONF="$HOME/.claude/statusline-backup.conf"
 # shellcheck source=/dev/null
 [ -f "$CONF" ] && source "$CONF"
 
-if [ -n "$BACKUP_REPO" ] && [ -d "$BACKUP_REPO/.git" ]; then
-  LOG_FILE="$BACKUP_REPO/$BACKUP_FILE"
-else
-  LOG_FILE="$HOME/.claude/statusline-sessions.json"
-fi
+LOG_FILE="$HOME/.claude/statusline-sessions.json"
 
 result=$(node - "$input" "$LOG_FILE" "$PPID_FALLBACK" "${STATUSLINE_PROFILE:-}" 2>/dev/null << 'JSEOF'
 const fs = require('fs');
@@ -146,6 +142,7 @@ IFS=$'\t' read -r model ctx_int ctx_color ctx_suffix tok_k <<< "$result"
 # --- Background backup (if configured) ---
 if [ -n "$BACKUP_REPO" ] && [ -d "$BACKUP_REPO/.git" ]; then
   (
+    cp "$LOG_FILE" "$BACKUP_REPO/$BACKUP_FILE"
     cd "$BACKUP_REPO" || exit
     git add "$BACKUP_FILE"
     if ! git diff --cached --quiet; then
