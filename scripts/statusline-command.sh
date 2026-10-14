@@ -19,9 +19,9 @@ else
   LOG_FILE="$HOME/.claude/statusline-sessions.json"
 fi
 
-result=$(node - "$input" "$LOG_FILE" "$PPID_FALLBACK" 2>/dev/null << 'JSEOF'
+result=$(node - "$input" "$LOG_FILE" "$PPID_FALLBACK" "${STATUSLINE_PROFILE:-}" 2>/dev/null << 'JSEOF'
 const fs = require('fs');
-const [,, rawInput, logFile, ppidFallback] = process.argv;
+const [,, rawInput, logFile, ppidFallback, profileArg] = process.argv;
 
 let d = {};
 try { d = JSON.parse(rawInput); } catch(e) {}
@@ -29,6 +29,7 @@ try { d = JSON.parse(rawInput); } catch(e) {}
 const sessionId      = d.session_id                             ?? ppidFallback;
 const sessionName    = d.session_name                           ?? null;
 const transcriptPath = d.transcript_path                        ?? null;
+const profile        = (profileArg && profileArg.trim())        ? profileArg.trim() : null;
 const model          = d.model?.display_name                    ?? 'Unknown';
 const used_pct       = d.context_window?.used_percentage        ?? 0;
 const total_in       = d.context_window?.total_input_tokens     ?? 0;
@@ -49,6 +50,7 @@ if (!data.sessions) data.sessions = {};
 let sess = data.sessions[sessionId] ?? {
   session_id: sessionId,
   session_name: sessionName,
+  profile,
   model,
   started_at: nowIso,
   last_activity_at: nowIso,
@@ -112,6 +114,7 @@ if (is_compact) {
 }
 
 sess._state           = { total_in, total_out, last_ctx: used_pct > 0 ? used_pct : last_ctx, custom_title, title_scan_offset };
+sess.profile          = profile;
 sess.model            = model;
 sess.last_activity_at = nowIso;
 if (effectiveName) sess.session_name = effectiveName;

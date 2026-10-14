@@ -4,8 +4,32 @@ let activeSessLogLen  = 0;
 let activeSessLastAt  = '';
 let activePricingJson = null;
 
+function renderProfileBar() {
+  const profiles = [...new Set(
+    Object.values(globalData.sessions).map(s => s.profile).filter(Boolean)
+  )].sort();
+
+  const bar = document.getElementById('profile-bar');
+  if (!profiles.length) { bar.hidden = true; activeProfile = null; return; }
+
+  bar.hidden = false;
+  const pills = document.getElementById('profile-pills');
+  pills.innerHTML = '';
+
+  const makeBtn = (label, value) => {
+    const b = document.createElement('button');
+    b.className = 'range-btn' + (activeProfile === value ? ' active' : '');
+    b.textContent = label;
+    b.onclick = () => { activeProfile = value; renderAll(); };
+    pills.appendChild(b);
+  };
+
+  makeBtn('All', null);
+  profiles.forEach(p => makeBtn(p, p));
+}
+
 function renderAll() {
-  const sessions = Object.values(globalData.sessions)
+  const sessions = getFilteredSessions()
     .sort((a, b) => new Date(b.last_activity_at) - new Date(a.last_activity_at));
 
   let totalTok = 0, totalComp = 0, totalCR = 0, totalIn = 0;
@@ -98,6 +122,7 @@ function renderAll() {
     }
   }
 
+  renderProfileBar();
   initDailySection();
 }
 

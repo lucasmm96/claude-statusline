@@ -9,5 +9,6 @@ const LS_PRICE_CACHE_WRITE = 'statusline_price_cache_write';
 const LS_PRICE_OUTPUT      = 'statusline_price_output';
 
 let globalData = null;
+let activeProfile = null;
 let tokChart = null;
 let ctxChart = null;

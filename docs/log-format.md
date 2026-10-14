@@ -18,6 +18,7 @@ The log is stored as `~/.claude/statusline-sessions.json` (or inside your backup
 {
   "session_id": "a1b2c3d4-...",
   "session_name": "Feature implementation",
+  "profile": "client-a",
   "model": "Sonnet 4.6",
   "started_at": "2026-10-05T10:00:00.000Z",
   "last_activity_at": "2026-10-05T11:52:00.000Z",
@@ -34,6 +35,7 @@ The log is stored as `~/.claude/statusline-sessions.json` (or inside your backup
 |---|---|
 | `session_id` | UUID from Claude Code's hook payload; stable across `--resume` |
 | `session_name` | User-provided session name, if any |
+| `profile` | Value of `$STATUSLINE_PROFILE` at the time of the exchange; `null` if unset |
 | `model` | Model display name at last activity |
 | `started_at` | ISO timestamp of the first recorded exchange |
 | `last_activity_at` | ISO timestamp of the most recent exchange |

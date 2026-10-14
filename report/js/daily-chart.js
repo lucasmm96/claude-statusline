@@ -11,7 +11,7 @@ let dailySectionInitialized = false;
 
 function computeDailyTotals(range, fromDate, toDate) {
   const byDay = {};
-  for (const sess of Object.values(globalData.sessions)) {
+  for (const sess of getFilteredSessions()) {
     for (const e of (sess.log || [])) {
       if (e.event || !e.at) continue;
       const day = localDateStr(e.at);
@@ -57,7 +57,7 @@ function renderDailyChart(range, fromDate, toDate) {
 
   if (pricingData) {
     const costByDay = {};
-    for (const sess of Object.values(globalData.sessions)) {
+    for (const sess of getFilteredSessions()) {
       const modelPrice = pricingData.prices[sess.model || ''] || pricingData._default;
       for (const e of dedupe(sess.log || [])) {
         if (e.event || !e.at) continue;

@@ -30,6 +30,13 @@ function fmtDay(dateStr) {
   const [y, m, d] = dateStr.split('-').map(Number);
   return new Date(y, m - 1, d).toLocaleString(undefined, { month: 'short', day: 'numeric' });
 }
+function getFilteredSessions() {
+  if (!globalData) return [];
+  const all = Object.values(globalData.sessions);
+  if (!activeProfile) return all;
+  return all.filter(s => s.profile === activeProfile);
+}
+
 function sessStats(sess) {
   const log = dedupe(sess.log || []);
   const exch = log.filter(e => !e.event);

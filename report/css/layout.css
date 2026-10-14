@@ -122,6 +122,25 @@ h1 { font-size: var(--text-lg); font-weight: 600; letter-spacing: var(--tracking
   margin-top: 3px;
 }
 
+/* --- Profile filter bar --- */
+#profile-bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  flex-shrink: 0;
+}
+.profile-label {
+  font-size: var(--text-xs);
+  text-transform: uppercase;
+  letter-spacing: var(--tracking-wide);
+  color: var(--muted);
+  font-weight: 500;
+  white-space: nowrap;
+}
+#profile-pills { display: flex; gap: var(--space-1); flex-wrap: wrap; }
+
 /* --- Daily spending section --- */
 #daily-section {
   border-bottom: 1px solid var(--border);
