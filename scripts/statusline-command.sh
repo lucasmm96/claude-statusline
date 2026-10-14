@@ -114,7 +114,7 @@ if (is_compact) {
 }
 
 sess._state           = { total_in, total_out, last_ctx: used_pct > 0 ? used_pct : last_ctx, custom_title, title_scan_offset };
-sess.profile          = profile;
+if (profile !== null) sess.profile = profile;
 sess.model            = model;
 sess.last_activity_at = nowIso;
 if (effectiveName) sess.session_name = effectiveName;
