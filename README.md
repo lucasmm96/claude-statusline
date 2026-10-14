@@ -112,6 +112,36 @@ Click **Connect** — the page fetches the file from the GitHub API and loads it
 
 To remove saved credentials, open the modal and click **Clear credentials**.
 
+### Pricing
+
+Click **$ Pricing** in the header to configure token prices per model (USD per million tokens). Set prices for input, cache read, cache write, and output tokens. Once configured, an **Est. Cost** stat appears in the summary bar. Prices are saved in `localStorage` and applied per-model when rendering the report.
+
+### Profiles
+
+Tag sessions with a profile name by setting `STATUSLINE_PROFILE` in your environment:
+
+```bash
+# In ~/.bashrc / ~/.zshrc
+export STATUSLINE_PROFILE="work"
+```
+
+Or inline in `settings.json`:
+
+```json
+{
+  "statusLine": {
+    "type": "command",
+    "command": "STATUSLINE_PROFILE=work bash ~/.claude/statusline-command.sh"
+  }
+}
+```
+
+When the log contains multiple profiles, the report shows a profile filter bar so you can view stats and cost for a single profile at a time.
+
+### Auto-refresh
+
+When loading from a URL or private repo, the report polls for changes and re-renders automatically when new data is available — no manual reload needed.
+
 ---
 
 ## Optional: private repo backup
@@ -136,7 +166,7 @@ Create `~/.claude/statusline-backup.conf`:
 BACKUP_REPO="$HOME/your-local-clone"   # absolute path to the local clone
 BACKUP_BRANCH="main"
 BACKUP_FILE="sessions.json"
-BACKUP_PUSH_INTERVAL=600               # min seconds between remote pushes (600 = 10 min)
+BACKUP_PUSH_INTERVAL=60                # min seconds between pushes (default: 1 min)
 ```
 
 That's it. On the next Claude Code response the script will write `sessions.json` into the clone, commit it, and push in the background.
@@ -145,7 +175,7 @@ That's it. On the next Claude Code response the script will write `sessions.json
 
 1. The log is written directly into the repo clone folder
 2. A background process runs `git add + commit` after each write
-3. A push happens at most once every `BACKUP_PUSH_INTERVAL` seconds
+3. A push happens at most once per `BACKUP_PUSH_INTERVAL` seconds (default: 60)
 4. Auth uses your existing git credentials (SSH key or OS credential manager) — no credentials go in the config file
 5. Failures are silent and automatically retried at the next interval
 

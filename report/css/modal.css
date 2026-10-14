@@ -109,9 +109,10 @@
   color: var(--muted);
   cursor: pointer;
   font-size: var(--text-sm);
-  transition: color 100ms, background 100ms;
+  transition: color 100ms, background 100ms, transform 80ms;
 }
 .btn-remove:hover { color: var(--red); background: rgba(248,81,73,0.1); }
+.btn-remove:active { transform: scale(0.92); }
 
 .modal-close {
   position: absolute;
@@ -125,9 +126,10 @@
   line-height: 1;
   padding: 2px var(--space-1);
   border-radius: var(--radius-sm);
-  transition: background 100ms, color 100ms;
+  transition: background 100ms, color 100ms, transform 80ms;
 }
 .modal-close:hover { background: var(--surface2); color: var(--text); }
+.modal-close:active { transform: scale(0.92); }
 #modal-status { font-size: var(--text-sm); margin-top: var(--space-3); min-height: 18px; }
 #modal-status.ok { color: var(--green); }
 #modal-status.err { color: var(--red); }

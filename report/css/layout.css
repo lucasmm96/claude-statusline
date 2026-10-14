@@ -149,9 +149,10 @@ h1 { font-size: var(--text-lg); font-weight: 600; letter-spacing: var(--tracking
   font-size: var(--text-xs);
   font-family: inherit;
   cursor: pointer;
-  transition: border-color 120ms, background 120ms, color 120ms;
+  transition: border-color 120ms, background 120ms, color 120ms, transform 80ms;
 }
 .profile-btn:hover { border-color: var(--accent); color: var(--text); }
+.profile-btn:active { transform: scale(0.97); }
 .profile-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 
 /* --- Daily spending section --- */
@@ -185,9 +186,10 @@ h1 { font-size: var(--text-lg); font-weight: 600; letter-spacing: var(--tracking
   font-size: var(--text-xs);
   font-family: inherit;
   cursor: pointer;
-  transition: border-color 120ms, background 120ms, color 120ms;
+  transition: border-color 120ms, background 120ms, color 120ms, transform 80ms;
 }
 .range-btn:hover { border-color: var(--accent); color: var(--text); }
+.range-btn:active { transform: scale(0.97); }
 .range-btn.active { background: var(--accent); border-color: var(--accent); color: #fff; }
 .custom-dates { display: flex; align-items: center; gap: var(--space-1); margin-left: var(--space-1); }
 .custom-dates input[type="date"] {

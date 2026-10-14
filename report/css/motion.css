@@ -2,6 +2,11 @@
 @media (prefers-reduced-motion: reduce) {
   .btn { transition: border-color 80ms, background 80ms, opacity 80ms; }
   .btn:active { transform: none; }
+  .range-btn { transition: border-color 80ms, background 80ms, color 80ms; }
+  .range-btn:active { transform: none; }
+  .profile-btn { transition: border-color 80ms, background 80ms, color 80ms; }
+  .profile-btn:active { transform: none; }
+  .btn-remove:active, .modal-close:active { transform: none; }
   .sess-item { transition: background 80ms; }
   .modal-overlay { transition: opacity 100ms ease; }
   .modal { transition: opacity 100ms ease; transform: none !important; }
