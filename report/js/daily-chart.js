@@ -152,7 +152,7 @@ function initDailySection() {
 
   dailySectionInitialized = true;
 
-  document.querySelectorAll('.range-btn').forEach(btn => {
+  document.querySelectorAll('#daily-section .range-btn').forEach(btn => {
     btn.onclick = () => setRange(btn.dataset.range === '0' ? 0 : btn.dataset.range);
   });
 
