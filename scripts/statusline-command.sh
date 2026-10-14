@@ -7,7 +7,7 @@ PPID_FALLBACK="$PPID"
 BACKUP_REPO=""               # absolute path to local git clone
 BACKUP_BRANCH="main"
 BACKUP_FILE="sessions.json"
-BACKUP_PUSH_INTERVAL=600     # min seconds between pushes (default: 10 min)
+BACKUP_PUSH_INTERVAL=60      # min seconds between pushes (default: 1 min)
 
 CONF="$HOME/.claude/statusline-backup.conf"
 # shellcheck source=/dev/null
