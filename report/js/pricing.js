@@ -50,7 +50,7 @@ function getPricing() {
 
 function calcCost(sessions, pricingData) {
   let cost = 0;
-  for (const s of Object.values(sessions)) {
+  for (const s of sessions) {
     const modelName = s.model || 'Unknown';
     const modelPrice = pricingData.prices[modelName] || pricingData._default;
     const log = dedupe(s.log || []);
@@ -67,7 +67,7 @@ function calcCost(sessions, pricingData) {
 
 function calcUnpricedTokens(sessions, pricingData) {
   let unpriced = 0;
-  for (const s of Object.values(sessions)) {
+  for (const s of sessions) {
     const modelName = s.model || 'Unknown';
     const hasPrice = pricingData.prices[modelName] !== undefined;
     const defaultPrice = pricingData._default;

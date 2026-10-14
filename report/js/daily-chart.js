@@ -4,7 +4,7 @@ function localDateStr(d) {
 }
 
 let dailyChart = null;
-let activeRange = 5;
+let activeRange = 0;
 let currentDateFrom = '';
 let currentDateTo = '';
 let dailySectionInitialized = false;

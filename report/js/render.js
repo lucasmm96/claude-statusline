@@ -50,8 +50,8 @@ function renderAll() {
   const costStat = document.getElementById('s-cost-stat');
   const statBar  = document.getElementById('stat-bar');
   if (pricing) {
-    const cost = calcCost(globalData.sessions, pricing);
-    const unpriced = calcUnpricedTokens(globalData.sessions, pricing);
+    const cost = calcCost(getFilteredSessions(), pricing);
+    const unpriced = calcUnpricedTokens(getFilteredSessions(), pricing);
     let costText = fmtCost(cost);
     if (unpriced > 0) costText += ` <span class="cost-warning">⚠ ${fmtN(unpriced)} unpriced</span>`;
     document.getElementById('s-cost').innerHTML = costText;
