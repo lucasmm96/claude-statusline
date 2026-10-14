@@ -18,7 +18,7 @@ function renderProfileBar() {
 
   const makeBtn = (label, value) => {
     const b = document.createElement('button');
-    b.className = 'range-btn' + (activeProfile === value ? ' active' : '');
+    b.className = 'profile-btn' + (activeProfile === value ? ' active' : '');
     b.textContent = label;
     b.onclick = () => { activeProfile = value; renderAll(); };
     pills.appendChild(b);
