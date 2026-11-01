@@ -1,19 +1,20 @@
 #!/usr/bin/env bash
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 input=$(cat)
 PPID_FALLBACK="$PPID"
 
 # --- Optional backup config ---
-# Create ~/.claude/statusline-backup.conf to enable background git push.
+# Create statusline-backup.conf in the same directory as this script to enable background git push.
 BACKUP_REPO=""               # absolute path to local git clone
 BACKUP_BRANCH="main"
 BACKUP_FILE="sessions.json"
 BACKUP_PUSH_INTERVAL=60      # min seconds between pushes (default: 1 min)
 
-CONF="$HOME/.claude/statusline-backup.conf"
+CONF="$SCRIPT_DIR/statusline-backup.conf"
 # shellcheck source=/dev/null
 [ -f "$CONF" ] && source "$CONF"
 
-LOG_FILE="$HOME/.claude/statusline-sessions.json"
+LOG_FILE="$SCRIPT_DIR/statusline-sessions.json"
 
 result=$(node - "$input" "$LOG_FILE" "$PPID_FALLBACK" "${STATUSLINE_PROFILE:-}" 2>/dev/null << 'JSEOF'
 const fs = require('fs');
@@ -161,7 +162,7 @@ fi
 # --- Background API upload (if configured) ---
 if [ -n "$API_URL" ] && [ -n "$API_KEY" ]; then
   (
-    exec 9>"$HOME/.claude/.statusline-api.lock"
+    exec 9>"$SCRIPT_DIR/.statusline-api.lock"
     flock -n 9 || exit 0
     curl -s --fail-with-body \
       -X POST "$API_URL/api/ingest" \

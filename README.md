@@ -30,18 +30,19 @@ Model: Sonnet 4.6 | Context: 42% | Tokens: 1.2M
 ### Step 1 — Download the script
 
 ```bash
-mkdir -p ~/.claude
+mkdir -p ~/.claude/statusline
 curl -fsSL https://raw.githubusercontent.com/lucasmm96/claude-statusline/master/scripts/statusline-command.sh \
-  -o ~/.claude/statusline-command.sh
-chmod +x ~/.claude/statusline-command.sh
+  -o ~/.claude/statusline/statusline-command.sh
+chmod +x ~/.claude/statusline/statusline-command.sh
 ```
 
 Or clone the repo and copy manually:
 
 ```bash
 git clone https://github.com/lucasmm96/claude-statusline.git
-cp claude-statusline/scripts/statusline-command.sh ~/.claude/statusline-command.sh
-chmod +x ~/.claude/statusline-command.sh
+mkdir -p ~/.claude/statusline
+cp claude-statusline/scripts/statusline-command.sh ~/.claude/statusline/
+chmod +x ~/.claude/statusline/statusline-command.sh
 ```
 
 ### Step 2 — Register the hook in Claude Code settings
@@ -52,7 +53,7 @@ Open (or create) `~/.claude/settings.json` and add the `statusLine` key:
 {
   "statusLine": {
     "type": "command",
-    "command": "bash ~/.claude/statusline-command.sh"
+    "command": "bash ~/.claude/statusline/statusline-command.sh"
   }
 }
 ```
@@ -69,7 +70,7 @@ Start a Claude Code session and send any message. After the first response, you 
 Model: Sonnet 4.6 | Context: 42% | Tokens: 109.0k
 ```
 
-The log file is created automatically at `~/.claude/statusline-sessions.json`.
+The log file is created automatically at `~/.claude/statusline/statusline-sessions.json`.
 
 ---
 
@@ -83,7 +84,7 @@ Or download/clone this repo and open `report/index.html` directly in any browser
 
 ### Option A — Load a local file
 
-Click **Load file** and select your `~/.claude/statusline-sessions.json`.
+Click **Load file** and select your `~/.claude/statusline/statusline-sessions.json`.
 
 ### Option B — Load from a URL
 
@@ -136,7 +137,7 @@ Or inline in `settings.json`:
 {
   "statusLine": {
     "type": "command",
-    "command": "STATUSLINE_PROFILE=work bash ~/.claude/statusline-command.sh"
+    "command": "STATUSLINE_PROFILE=work bash ~/.claude/statusline/statusline-command.sh"
   }
 }
 ```
@@ -157,7 +158,7 @@ The script can upload your log to a PostgreSQL database after each response via 
 
 ```
 statusline-command.sh
-  ├── writes ~/.claude/statusline-sessions.json  (always, primary)
+  ├── writes ~/.claude/statusline/statusline-sessions.json  (always, primary)
   ├── git commit+push to backup repo             (if BACKUP_REPO configured)
   └── curl POST /api/ingest                      (if API_URL configured, background)
 
@@ -173,7 +174,7 @@ See **[docs/api-deployment.md](docs/api-deployment.md)** for the full setup guid
 
 ### Configure the hook
 
-Add to `~/.claude/statusline-backup.conf`:
+Add to `~/.claude/statusline/statusline-backup.conf`:
 
 ```bash
 API_URL="https://your-deployment.vercel.app"
@@ -190,7 +191,7 @@ The script can also commit and push your log to a private git repository after e
 
 ### Setup
 
-Create a private repo on GitHub, clone it locally, then create `~/.claude/statusline-backup.conf`:
+Create a private repo on GitHub, clone it locally, then create `~/.claude/statusline/statusline-backup.conf`:
 
 ```bash
 BACKUP_REPO="$HOME/your-local-clone"   # absolute path to the local clone
@@ -213,7 +214,7 @@ When you rename a session in the Claude Code UI (or use `--title`), the new name
 
 **Nothing appears after a response:**
 - Verify Node.js is on your PATH: `node --version`
-- Run the script manually: `echo '{}' | bash ~/.claude/statusline-command.sh`
+- Run the script manually: `echo '{}' | bash ~/.claude/statusline/statusline-command.sh`
 - Check that `settings.json` is valid JSON
 
 **Context shows `0%` permanently:**
@@ -228,7 +229,7 @@ When you rename a session in the Claude Code UI (or use `--title`), the new name
 - Try pushing manually: `cd ~/your-local-clone && git push`
 
 **API upload not working:**
-- Check `API_URL` and `API_KEY` are set in `~/.claude/statusline-backup.conf`
+- Check `API_URL` and `API_KEY` are set in `~/.claude/statusline/statusline-backup.conf`
 - Test manually: `curl -H "Authorization: Bearer $API_KEY" $API_URL/api/sessions`
 - Check Vercel function logs for runtime errors
 

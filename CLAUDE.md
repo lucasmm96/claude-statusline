@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-A Claude Code statusline hook that persists token usage and context window data across sessions. Users install `scripts/statusline-command.sh` into `~/.claude/` and register it in `~/.claude/settings.json`. There is no build step, no package.json, and no test suite.
+A Claude Code statusline hook that persists token usage and context window data across sessions. Users install `scripts/statusline-command.sh` into `~/.claude/statusline/` and register it in `~/.claude/settings.json`. There is no build step, no package.json, and no test suite.
 
 ## Files
 

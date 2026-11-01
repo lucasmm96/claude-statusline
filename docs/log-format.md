@@ -1,6 +1,6 @@
 # Log Format
 
-The log is stored as `~/.claude/statusline-sessions.json` (or inside your backup repo if configured).
+The log is stored as `~/.claude/statusline/statusline-sessions.json` (or inside your backup repo if configured).
 
 ## Top-level structure
 

@@ -41,7 +41,7 @@ After deploy, Vercel gives you a URL like `https://claude-statusline-report.verc
 
 ### 4. Configure the hook
 
-Add to `~/.claude/statusline-backup.conf`:
+Add to `~/.claude/statusline/statusline-backup.conf`:
 ```bash
 API_URL="https://claude-statusline-report.vercel.app"
 API_KEY="a3f8c2d1e9b04..."
@@ -63,7 +63,7 @@ The report auto-saves the key in `localStorage` and reconnects on every page loa
 
 ```
 statusline-command.sh
-  ├── writes ~/.claude/statusline-sessions.json  (always, primary)
+  ├── writes ~/.claude/statusline/statusline-sessions.json  (always, primary)
   ├── git commit+push to backup repo             (if BACKUP_REPO configured)
   └── curl POST /api/ingest                      (if API_URL configured, background)
 
@@ -101,7 +101,7 @@ curl -X POST "$API_URL/api/ingest" ...
 curl -X POST "$API_URL/api/ingest" \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
-  -d @~/.claude/statusline-sessions.json
+  -d @~/.claude/statusline/statusline-sessions.json
 ```
 
 ---
@@ -132,5 +132,5 @@ Once the Vercel deployment is confirmed working:
 | `401 Unauthorized` | Wrong API key | Check key in Vercel env vars vs `.conf` |
 | `500 Internal Server Error` | `DATABASE_URL` missing or wrong | Verify var in Vercel dashboard |
 | Report shows no data | Haven't connected to Database source | Click Database button, enter API Key |
-| Hook doesn't upload | `API_URL` not in `.conf` | Add `API_URL=...` to `~/.claude/statusline-backup.conf` |
+| Hook doesn't upload | `API_URL` not in `.conf` | Add `API_URL=...` to `~/.claude/statusline/statusline-backup.conf` |
 | Cold start delay (~500ms) | First request after idle | Expected behavior for serverless |

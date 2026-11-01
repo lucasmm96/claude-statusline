@@ -13,7 +13,7 @@ Claude Code calls the `statusLine.command` after every response, passing a JSON 
 
 The script processes this payload with an inline Node.js script (`node -`), which:
 
-1. Reads `~/.claude/statusline-sessions.json`
+1. Reads `~/.claude/statusline/statusline-sessions.json`
 2. Finds or creates the session entry
 3. Detects compact events (cumulative totals decrease)
 4. Deduplicates streaming artifacts (same token values fired multiple times per exchange)
@@ -30,7 +30,8 @@ On Windows, use Git Bash or WSL to run bash scripts.
 **Step 1 — Copy the script:**
 
 ```bash
-cp scripts/statusline-command.sh ~/.claude/statusline-command.sh
+mkdir -p ~/.claude/statusline
+cp scripts/statusline-command.sh ~/.claude/statusline/
 ```
 
 **Step 2 — Add to `~/.claude/settings.json`:**
@@ -39,7 +40,7 @@ cp scripts/statusline-command.sh ~/.claude/statusline-command.sh
 {
   "statusLine": {
     "type": "command",
-    "command": "bash ~/.claude/statusline-command.sh"
+    "command": "bash ~/.claude/statusline/statusline-command.sh"
   }
 }
 ```
@@ -56,10 +57,10 @@ Model: Sonnet 4.6 | Context: 42% | Tokens: 109.0k
 
 **Nothing appears:**
 - Check that Node.js is on your `$PATH`: `node --version`
-- Check that the script is executable: `chmod +x ~/.claude/statusline-command.sh`
+- Check that the script is executable: `chmod +x ~/.claude/statusline/statusline-command.sh`
 - Run the script manually with sample input to see errors:
   ```bash
-  echo '{}' | bash ~/.claude/statusline-command.sh
+  echo '{}' | bash ~/.claude/statusline/statusline-command.sh
   ```
 
 **Context shows `0%` or `0~%` permanently:**

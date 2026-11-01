@@ -5,7 +5,7 @@ The script can automatically commit and push your session log to a private git r
 ## How it works
 
 1. You clone a private git repo to a local path
-2. You create `~/.claude/statusline-backup.conf` pointing to that path
+2. You create `~/.claude/statusline/statusline-backup.conf` pointing to that path
 3. The script writes the JSON log directly into the repo folder
 4. After each write, a background process does `git add + commit`
 5. A push happens at most once every 10 minutes (configurable)
@@ -22,7 +22,7 @@ Authentication uses whatever git credentials you already have configured (SSH ke
 git clone git@github.com:YOUR_USERNAME/claude-stats-private.git ~/claude-stats
 ```
 
-**Step 3 — Create the config file** at `~/.claude/statusline-backup.conf`:
+**Step 3 — Create the config file** at `~/.claude/statusline/statusline-backup.conf`:
 
 ```bash
 BACKUP_REPO="$HOME/claude-stats"   # absolute path to the clone
@@ -58,4 +58,4 @@ If you want to host the report on GitHub Pages and load data from your private r
 - The script does not push on every response — only commits. Pushes are throttled to once per `BACKUP_PUSH_INTERVAL` seconds.
 - If a push fails (no internet, auth issue), it is silently retried next time the interval elapses.
 - The `.last_push` file inside the repo tracks the last push timestamp.
-- If `BACKUP_REPO` is set but the directory does not contain a `.git` folder, the script falls back to `~/.claude/statusline-sessions.json` silently.
+- If `BACKUP_REPO` is set but the directory does not contain a `.git` folder, the script falls back to `~/.claude/statusline/statusline-sessions.json` silently.
