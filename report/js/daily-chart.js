@@ -24,6 +24,10 @@ function computeDailyTotals(range, fromDate, toDate) {
 
   if (range === 'custom') {
     entries = entries.filter(([d]) => d >= fromDate && d <= toDate);
+  } else if (range === 'month') {
+    const today = new Date();
+    const cutoffStr = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-01`;
+    entries = entries.filter(([d]) => d >= cutoffStr);
   } else if (range > 0) {
     const today = new Date();
     const cutoff = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (range - 1));
@@ -127,7 +131,8 @@ function setRange(range) {
   if (range !== 'custom') {
     currentDateFrom = '';
     currentDateTo = '';
-    renderDailyChart(range === 0 || range === '0' ? 0 : Number(range));
+    const r = (range === 0 || range === '0') ? 0 : (Number(range) || range);
+    renderDailyChart(r);
   }
 }
 
