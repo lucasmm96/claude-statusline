@@ -142,6 +142,8 @@ IFS=$'\t' read -r model ctx_int ctx_color ctx_suffix tok_k <<< "$result"
 # --- Background backup (if configured) ---
 if [ -n "$BACKUP_REPO" ] && [ -d "$BACKUP_REPO/.git" ]; then
   (
+    exec 9>"$BACKUP_REPO/.statusline.lock"
+    flock -n 9 || exit 0
     cp "$LOG_FILE" "$BACKUP_REPO/$BACKUP_FILE"
     cd "$BACKUP_REPO" || exit
     git add "$BACKUP_FILE"
