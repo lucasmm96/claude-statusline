@@ -9,8 +9,11 @@ function renderProfileBar() {
     Object.values(globalData.sessions).map(s => s.profile).filter(Boolean)
   )].sort();
 
+  const all = Object.values(globalData.sessions);
+  const hasOther = all.some(s => !s.profile);
+
   const bar = document.getElementById('profile-bar');
-  if (!profiles.length) { bar.hidden = true; activeProfile = null; return; }
+  if (!profiles.length && !hasOther) { bar.hidden = true; activeProfile = null; return; }
 
   bar.hidden = false;
   const pills = document.getElementById('profile-pills');
@@ -26,6 +29,7 @@ function renderProfileBar() {
 
   makeBtn('All', null);
   profiles.forEach(p => makeBtn(p, p));
+  if (hasOther) makeBtn('Other', '__other__');
 }
 
 function renderAll() {

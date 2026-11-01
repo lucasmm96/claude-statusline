@@ -34,6 +34,7 @@ function getFilteredSessions() {
   if (!globalData) return [];
   const all = Object.values(globalData.sessions);
   if (!activeProfile) return all;
+  if (activeProfile === '__other__') return all.filter(s => !s.profile);
   return all.filter(s => s.profile === activeProfile);
 }
 
