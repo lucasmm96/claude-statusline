@@ -29,6 +29,7 @@
     <input type="text" id="url-in" placeholder="Raw JSON URL…">
     <button class="btn btn-primary" id="url-btn">Load URL</button>
     <button class="btn" id="gh-btn" onclick="openModal()">&#128274; Private repo</button>
+    <button class="btn" id="api-btn" onclick="openApiModal()">&#128220; Database</button>
     <button class="btn" id="pricing-btn" onclick="openPricingModal()">$ Pricing</button>
     <div id="refresh-indicator" hidden aria-live="polite" aria-atomic="true">
       <span class="ri-dot"></span>
@@ -177,6 +178,43 @@
   </div>
 </div>
 
+<!-- Database / API modal -->
+<div class="modal-overlay" id="api-modal-overlay">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="api-modal-title">
+    <button class="modal-close" onclick="closeApiModal()" aria-label="Close">&times;</button>
+    <h2 id="api-modal-title">Database (API)</h2>
+    <p class="subtitle">Connect to the statusline API backed by Neon PostgreSQL. Credentials stay in your browser only.</p>
+
+    <div class="field">
+      <label>API URL <span style="font-weight:400;opacity:.6">(optional)</span></label>
+      <input type="text" id="a-url" placeholder="Leave blank if report and API share this domain" autocomplete="off" spellcheck="false">
+      <p class="hint">Leave blank when the report is served from the same Vercel deployment as the API. Fill in only if connecting from a different origin (e.g. local dev).</p>
+    </div>
+
+    <div class="field">
+      <label>API Key</label>
+      <div class="field-row">
+        <input type="password" id="a-key" placeholder="sk-…" autocomplete="off" spellcheck="false">
+        <button class="btn btn-sm" id="api-key-toggle" onclick="toggleApiKey()" style="flex-shrink:0">Show</button>
+      </div>
+    </div>
+
+    <div id="api-modal-status"></div>
+
+    <div class="modal-actions">
+      <button class="btn btn-sm btn-danger" id="api-clear-btn" onclick="clearApiCredentials()" style="display:none">Clear credentials</button>
+      <div class="spacer"></div>
+      <button class="btn btn-sm" onclick="closeApiModal()">Cancel</button>
+      <button class="btn btn-sm btn-primary" id="api-connect-btn" onclick="connectApi()">Connect</button>
+    </div>
+
+    <div class="security-note">
+      <strong>Privacy:</strong> the API URL and key are stored in <code>localStorage</code> for this browser only.
+      They are used exclusively to call your own API endpoint — no other network requests are made.
+    </div>
+  </div>
+</div>
+
 <script src="js/config.js"></script>
 <script src="js/pricing.js"></script>
 <script src="js/theme.js"></script>
@@ -187,6 +225,7 @@
 <script src="js/auto-refresh.js"></script>
 <script src="js/loaders.js"></script>
 <script src="js/github.js"></script>
+<script src="js/api.js"></script>
 <script src="js/daily-chart.js"></script>
 <script src="js/main.js"></script>
 </body>

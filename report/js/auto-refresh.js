@@ -92,6 +92,21 @@ async function _arFetch() {
     return { text: await res.text(), etag: res.headers.get('ETag') };
   }
 
+  // API / Database
+  if (_arSource.type === 'api') {
+    const { apiUrl, apiKey } = _arSource;
+    const url = (apiUrl || '').replace(/\/$/, '') + '/api/sessions';
+    const res = await fetch(url, {
+      headers: { 'Authorization': `Bearer ${apiKey}`, ...hdrs }
+    });
+    if (res.status === 304) return { notModified: true };
+    if (res.status === 401) throw new Error('Invalid API key (401)');
+    if (res.status === 403) throw new Error('Sem permissão (403)');
+    if (res.status === 404) throw new Error('Endpoint não encontrado (404)');
+    if (!res.ok) throw new Error('API error ' + res.status);
+    return { text: await res.text(), etag: res.headers.get('ETag') };
+  }
+
   // GitHub
   const { pat, repo, file } = _arSource;
   const apiUrl = `https://api.github.com/repos/${repo}/contents/${file || 'sessions.json'}`;

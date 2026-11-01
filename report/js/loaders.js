@@ -16,7 +16,7 @@ function loadJson(text, source) {
     globalData = d;
     stopAutoRefresh();
     renderAll();
-    if (source && (source.type === 'url' || source.type === 'github')) {
+    if (source && (source.type === 'url' || source.type === 'github' || source.type === 'api')) {
       startAutoRefresh(source);
     }
   } catch(e) {

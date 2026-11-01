@@ -1,0 +1,13 @@
+{
+  "outputDirectory": "report",
+  "functions": {
+    "api/ingest.js": {
+      "memory": 1024,
+      "maxDuration": 30
+    },
+    "api/sessions.js": {
+      "memory": 512,
+      "maxDuration": 10
+    }
+  }
+}

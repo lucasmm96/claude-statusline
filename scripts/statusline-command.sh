@@ -158,6 +158,20 @@ if [ -n "$BACKUP_REPO" ] && [ -d "$BACKUP_REPO/.git" ]; then
   ) &>/dev/null &
 fi
 
+# --- Background API upload (if configured) ---
+if [ -n "$API_URL" ] && [ -n "$API_KEY" ]; then
+  (
+    exec 9>"$HOME/.claude/.statusline-api.lock"
+    flock -n 9 || exit 0
+    curl -s --fail-with-body \
+      -X POST "$API_URL/api/ingest" \
+      -H "Authorization: Bearer $API_KEY" \
+      -H "Content-Type: application/json" \
+      --data-binary @"$LOG_FILE" \
+      >/dev/null 2>&1
+  ) &
+fi
+
 CYAN='\033[36m'
 RESET='\033[0m'
 MAGENTA='\033[35m'

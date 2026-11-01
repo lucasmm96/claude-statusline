@@ -17,15 +17,20 @@ document.getElementById('url-in').addEventListener('keydown', e => { if (e.key =
 (function() {
   const u = new URLSearchParams(location.search).get('data');
   if (u) { document.getElementById('url-in').value = u; fetchUrl(); return; }
-  // Auto-load from saved private repo credentials
-  tryAutoLoad();
+  // GitHub takes precedence; fall back to API if GitHub not configured
+  let hasPat = false;
+  try { hasPat = !!localStorage.getItem(LS_PAT); } catch(e) {}
+  if (hasPat) { tryAutoLoad(); } else { tryAutoLoadApi(); }
 })();
 
 document.getElementById('modal-overlay').addEventListener('click', e => {
   if (e.target === document.getElementById('modal-overlay')) closeModal();
 });
+document.getElementById('api-modal-overlay').addEventListener('click', e => {
+  if (e.target === document.getElementById('api-modal-overlay')) closeApiModal();
+});
 document.addEventListener('keydown', e => {
-  if (e.key === 'Escape') { closeModal(); closePricingModal(); }
+  if (e.key === 'Escape') { closeModal(); closePricingModal(); closeApiModal(); }
 });
 
 // Focus trap inside modal
