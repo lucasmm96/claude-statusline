@@ -111,10 +111,10 @@ function updateApiButton(connected) {
   const btn = document.getElementById('api-btn');
   if (!btn) return;
   if (connected) {
-    btn.textContent = '🗄 Database ✓';
+    btn.textContent = '📄 Database ✓';
     btn.classList.add('btn-connected');
   } else {
-    btn.textContent = '🗄 Database';
+    btn.textContent = '📄 Database';
     btn.classList.remove('btn-connected');
   }
 }
