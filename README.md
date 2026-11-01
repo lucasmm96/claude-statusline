@@ -12,6 +12,7 @@ Model: Sonnet 4.6 | Context: 42% | Tokens: 1.2M
 - Session renames (UI or `--title`) are picked up automatically from the transcript
 - Logs per-exchange token breakdown to a JSON file for later analysis
 - Optional: auto-push the log to a private git repo in the background
+- Optional: auto-upload the log to a Neon PostgreSQL database via a Vercel API
 
 ---
 
@@ -20,7 +21,7 @@ Model: Sonnet 4.6 | Context: 42% | Tokens: 1.2M
 - [Claude Code](https://claude.com/claude-code) CLI installed and working
 - Bash (on Windows: Git Bash or WSL)
 - Node.js (any recent version — check with `node --version`)
-- Git (optional, only for the backup feature)
+- Git (optional, only for the git backup feature)
 
 ---
 
@@ -76,11 +77,13 @@ The log file is created automatically at `~/.claude/statusline-sessions.json`.
 
 The report page visualizes your session history: per-exchange token breakdown (input, cache read, cache write, output), context usage timeline, compact events, and aggregate stats.
 
-**How to open it:** download or clone this repo and open `report/index.html` in any browser. No server needed — it runs entirely in your browser.
+**Hosted version:** `https://claude-statusline-report.vercel.app`
+
+Or download/clone this repo and open `report/index.html` directly in any browser — no server needed.
 
 ### Option A — Load a local file
 
-Click **Load file** and select your `~/.claude/statusline-sessions.json` (or the `sessions.json` inside your backup repo clone).
+Click **Load file** and select your `~/.claude/statusline-sessions.json`.
 
 ### Option B — Load from a URL
 
@@ -90,11 +93,7 @@ Paste any raw JSON URL into the URL field and click **Load URL**. Works with pub
 https://raw.githubusercontent.com/YOUR_USERNAME/YOUR_REPO/main/sessions.json
 ```
 
-You can also append `?data=<url>` to the page URL to auto-load on open:
-
-```
-report/index.html?data=https://raw.githubusercontent.com/...
-```
+You can also append `?data=<url>` to the page URL to auto-load on open.
 
 ### Option C — Connect to a private GitHub repo
 
@@ -106,22 +105,28 @@ Click **🔒 Private repo** in the header. A modal will ask for:
 | Repository | `owner/repo` (e.g. `lucasmm96/my-statusline-log`) |
 | File path | Path to the JSON file inside the repo (default: `sessions.json`) |
 
-Click **Connect** — the page fetches the file from the GitHub API and loads it. The credentials are saved to your browser's `localStorage` and used to auto-load on the next page open.
+The PAT is saved to `localStorage` and never sent anywhere other than `api.github.com`. To generate one: GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens → select your repo → Contents: Read-only.
 
-**The PAT never leaves your browser** — it is sent only to `api.github.com`. To generate a suitable PAT: GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens → select your repo → Contents: Read-only.
+### Option D — Connect to the database
 
-To remove saved credentials, open the modal and click **Clear credentials**.
+Click **🗄 Database** in the header. A modal will ask for:
+
+| Field | Description |
+|---|---|
+| API URL | Base URL of your deployed API (leave blank if the report and API share the same domain) |
+| API Key | The `API_KEY` you configured in the Vercel environment |
+
+Click **Connect** — the report fetches from `GET /api/sessions` and renders your full session history. Credentials are saved to `localStorage` and used to auto-load on the next page open. Auto-refresh runs every 60 seconds.
 
 ### Pricing
 
-Click **$ Pricing** in the header to configure token prices per model (USD per million tokens). Set prices for input, cache read, cache write, and output tokens. Once configured, an **Est. Cost** stat appears in the summary bar. Prices are saved in `localStorage` and applied per-model when rendering the report.
+Click **$ Pricing** in the header to configure token prices per model (USD per million tokens). Once configured, an **Est. Cost** stat appears in the summary bar. Prices are saved in `localStorage`.
 
 ### Profiles
 
 Tag sessions with a profile name by setting `STATUSLINE_PROFILE` in your environment:
 
 ```bash
-# In ~/.bashrc / ~/.zshrc
 export STATUSLINE_PROFILE="work"
 ```
 
@@ -136,54 +141,71 @@ Or inline in `settings.json`:
 }
 ```
 
-When the log contains multiple profiles, the report shows a profile filter bar so you can view stats and cost for a single profile at a time.
+When the log contains multiple profiles, the report shows a filter bar with one button per profile, derived dynamically from the loaded data.
 
 ### Auto-refresh
 
-When loading from a URL or private repo, the report polls for changes and re-renders automatically when new data is available — no manual reload needed.
+When loading from a URL, private repo, or database, the report polls for changes every 60 seconds and re-renders automatically when new data is available.
 
 ---
 
-## Optional: private repo backup
+## Optional: database backend (API + Neon)
 
-The script can automatically commit and push your log to a private git repository after each Claude Code response. This runs entirely in the background and does not affect the statusline display.
+The script can upload your log to a PostgreSQL database after each response via a Vercel serverless API. This runs in the background and does not affect the statusline display.
 
-### Step 1 — Create a private repo
+### How it works
 
-Create a private repository on GitHub (or any git host). Keep it empty for now.
+```
+statusline-command.sh
+  ├── writes ~/.claude/statusline-sessions.json  (always, primary)
+  ├── git commit+push to backup repo             (if BACKUP_REPO configured)
+  └── curl POST /api/ingest                      (if API_URL configured, background)
 
-### Step 2 — Clone it locally
-
-```bash
-git clone https://github.com/YOUR_USERNAME/YOUR_PRIVATE_REPO.git ~/your-local-clone
+https://claude-statusline-report.vercel.app/
+  ├── /             → report SPA (static)
+  ├── /api/ingest   → serverless function (POST)
+  └── /api/sessions → serverless function (GET)
 ```
 
-### Step 3 — Create the config file
+### Deploy your own instance
 
-Create `~/.claude/statusline-backup.conf`:
+See **[docs/api-deployment.md](docs/api-deployment.md)** for the full setup guide: Neon database, Vercel deploy, environment variables, and migration of historical data.
+
+### Configure the hook
+
+Add to `~/.claude/statusline-backup.conf`:
+
+```bash
+API_URL="https://your-deployment.vercel.app"
+API_KEY="your-api-key"
+```
+
+If `API_URL` is not set, the upload block is skipped silently.
+
+---
+
+## Optional: private git repo backup
+
+The script can also commit and push your log to a private git repository after each response.
+
+### Setup
+
+Create a private repo on GitHub, clone it locally, then create `~/.claude/statusline-backup.conf`:
 
 ```bash
 BACKUP_REPO="$HOME/your-local-clone"   # absolute path to the local clone
 BACKUP_BRANCH="main"
 BACKUP_FILE="sessions.json"
-BACKUP_PUSH_INTERVAL=60                # min seconds between pushes (default: 1 min)
+BACKUP_PUSH_INTERVAL=60                # min seconds between pushes
 ```
 
-That's it. On the next Claude Code response the script will write `sessions.json` into the clone, commit it, and push in the background.
-
-### How it works
-
-1. The log is written directly into the repo clone folder
-2. A background process runs `git add + commit` after each write
-3. A push happens at most once per `BACKUP_PUSH_INTERVAL` seconds (default: 60)
-4. Auth uses your existing git credentials (SSH key or OS credential manager) — no credentials go in the config file
-5. Failures are silent and automatically retried at the next interval
+Auth uses your existing git credentials — no credentials go in the config file.
 
 ---
 
 ## Session renaming
 
-When you rename a session in the Claude Code UI (or use `--title`), the new name is picked up automatically from the session transcript on the next hook call. No manual action needed.
+When you rename a session in the Claude Code UI (or use `--title`), the new name is picked up automatically from the session transcript on the next hook call.
 
 ---
 
@@ -191,20 +213,27 @@ When you rename a session in the Claude Code UI (or use `--title`), the new name
 
 **Nothing appears after a response:**
 - Verify Node.js is on your PATH: `node --version`
-- Run the script manually to see any errors: `echo '{}' | bash ~/.claude/statusline-command.sh`
+- Run the script manually: `echo '{}' | bash ~/.claude/statusline-command.sh`
 - Check that `settings.json` is valid JSON
 
 **Context shows `0%` permanently:**
 - One `0%` on the very first exchange after startup is normal
-- `42~%` after `/compact` is expected — the `~` disappears after the next exchange
+- `42~%` after `/compact` is expected — the `~` disappears on the next exchange
 
 **Token count resets on `--resume`:**
 - You may have an older version of the script that used `$PPID` instead of `session_id`. Re-copy the script from this repo.
 
 **Backup not pushing:**
-- Check that `BACKUP_REPO` points to a directory that contains a `.git` folder
+- Check that `BACKUP_REPO` points to a directory with a `.git` folder
 - Try pushing manually: `cd ~/your-local-clone && git push`
-- Verify your git auth: `git -C ~/your-local-clone fetch`
+
+**API upload not working:**
+- Check `API_URL` and `API_KEY` are set in `~/.claude/statusline-backup.conf`
+- Test manually: `curl -H "Authorization: Bearer $API_KEY" $API_URL/api/sessions`
+- Check Vercel function logs for runtime errors
+
+**Report shows `401 Unauthorized`:**
+- The API key in the report modal doesn't match the `API_KEY` in Vercel env vars
 
 ---
 
@@ -218,9 +247,8 @@ An anonymized example is at **[examples/sessions.example.json](examples/sessions
 
 ## How it works (internals)
 
-Claude Code calls the `statusLine.command` after every response, piping a JSON payload to stdin. The payload includes session ID, model name, context percentage, cumulative token totals, and per-exchange token breakdown.
+Claude Code calls `statusLine.command` after every response, piping a JSON payload to stdin. The script runs an inline Node.js one-liner that:
 
-The script runs an inline Node.js one-liner that:
 1. Reads the existing log file
 2. Finds or creates the session entry by `session_id`
 3. Scans new bytes in the JSONL transcript to detect custom-title renames
@@ -228,6 +256,8 @@ The script runs an inline Node.js one-liner that:
 5. Deduplicates duplicate hook calls (streaming artifacts)
 6. Appends the exchange entry and writes the file
 7. Outputs a tab-separated string that the bash layer formats for display
+
+The bash layer then optionally runs a git commit/push and an API upload in parallel background subshells.
 
 See **[docs/setup.md](docs/setup.md)** for a deeper technical explanation.
 
