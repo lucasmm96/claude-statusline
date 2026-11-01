@@ -1,2 +1,4 @@
 .last_push
 *.local.conf
+.env.local
+.env*.local
