@@ -46,6 +46,30 @@ async function initSchema(sql) {
   await sql`CREATE INDEX IF NOT EXISTS idx_log_session ON log_entries (session_id, at DESC)`;
   await sql`CREATE INDEX IF NOT EXISTS idx_sessions_profile ON sessions (profile) WHERE profile IS NOT NULL`;
   await sql`CREATE INDEX IF NOT EXISTS idx_sessions_last_activity ON sessions (last_activity_at DESC)`;
+
+  await sql`CREATE TABLE IF NOT EXISTS log_errors (
+    id          BIGSERIAL PRIMARY KEY,
+    occurred_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+    endpoint    TEXT NOT NULL,
+    http_status INT,
+    error_code  TEXT,
+    message     TEXT NOT NULL,
+    session_id  TEXT
+  )`;
+
+  await sql`CREATE INDEX IF NOT EXISTS idx_errors_at ON log_errors (occurred_at DESC)`;
 }
 
-module.exports = { initDb, initSchema };
+async function logError({ endpoint, http_status, error_code, message, session_id = null }) {
+  try {
+    const sql = await initDb();
+    await sql`
+      INSERT INTO log_errors (endpoint, http_status, error_code, message, session_id)
+      VALUES (${endpoint}, ${http_status}, ${error_code}, ${message}, ${session_id})
+    `;
+  } catch (e) {
+    console.error('[logError] Failed to persist error:', e.message);
+  }
+}
+
+module.exports = { initDb, initSchema, logError };
