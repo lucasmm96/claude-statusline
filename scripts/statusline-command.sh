@@ -143,10 +143,15 @@ IFS=$'\t' read -r model ctx_int ctx_color ctx_suffix tok_k <<< "$result"
 # --- Background backup (if configured) ---
 if [ -n "$BACKUP_REPO" ] && [ -d "$BACKUP_REPO/.git" ]; then
   (
-    exec 9>"$BACKUP_REPO/.statusline.lock"
-    flock -n 9 || exit 0
+    _BKLOCK="$BACKUP_REPO/.statusline.lock.d"
+    if [ -d "$_BKLOCK" ]; then
+      _AGE=$(( $(date +%s) - $(date -r "$_BKLOCK" +%s 2>/dev/null || echo 0) ))
+      [ "$_AGE" -lt 120 ] && exit 0
+      rmdir "$_BKLOCK" 2>/dev/null
+    fi
+    mkdir "$_BKLOCK" 2>/dev/null || exit 0
     cp "$LOG_FILE" "$BACKUP_REPO/$BACKUP_FILE"
-    cd "$BACKUP_REPO" || exit
+    cd "$BACKUP_REPO" || { rmdir "$_BKLOCK" 2>/dev/null; exit 1; }
     git add "$BACKUP_FILE"
     if ! git diff --cached --quiet; then
       git commit -m "auto: $(date -u +%Y-%m-%dT%H:%M:%SZ)" --quiet
@@ -156,20 +161,27 @@ if [ -n "$BACKUP_REPO" ] && [ -d "$BACKUP_REPO/.git" ]; then
         git push origin "$BACKUP_BRANCH" --quiet 2>/dev/null && echo "$NOW" > .last_push
       fi
     fi
+    rmdir "$_BKLOCK" 2>/dev/null
   ) &>/dev/null &
 fi
 
 # --- Background API upload (if configured) ---
 if [ -n "$API_URL" ] && [ -n "$API_KEY" ]; then
   (
-    exec 9>"$SCRIPT_DIR/.statusline-api.lock"
-    flock -n 9 || exit 0
+    _APILOCK="$SCRIPT_DIR/.statusline-api.lock.d"
+    if [ -d "$_APILOCK" ]; then
+      _AGE=$(( $(date +%s) - $(date -r "$_APILOCK" +%s 2>/dev/null || echo 0) ))
+      [ "$_AGE" -lt 120 ] && exit 0
+      rmdir "$_APILOCK" 2>/dev/null
+    fi
+    mkdir "$_APILOCK" 2>/dev/null || exit 0
     curl -s --fail-with-body \
       -X POST "$API_URL/api/ingest" \
       -H "Authorization: Bearer $API_KEY" \
       -H "Content-Type: application/json" \
       --data-binary @"$LOG_FILE" \
       >/dev/null 2>&1
+    rmdir "$_APILOCK" 2>/dev/null
   ) &
 fi
 
