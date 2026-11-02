@@ -131,8 +131,7 @@ function setRange(range) {
   if (range !== 'custom') {
     currentDateFrom = '';
     currentDateTo = '';
-    const r = (range === 0 || range === '0') ? 0 : (Number(range) || range);
-    renderDailyChart(r);
+    renderAll();
   }
 }
 
@@ -142,7 +141,7 @@ function applyCustomRange() {
   if (from && to && from <= to) {
     currentDateFrom = from;
     currentDateTo   = to;
-    renderDailyChart('custom', from, to);
+    renderAll();
   }
 }
 

@@ -38,6 +38,29 @@ function getFilteredSessions() {
   return all.filter(s => s.profile === activeProfile);
 }
 
+function isInDateRange(isoDate) {
+  if (!isoDate) return true;
+  const r = activeRange;
+  if (!r || r === 0 || r === '0') return true;
+  const day = localDateStr(isoDate);
+  if (r === 'custom') {
+    if (!currentDateFrom || !currentDateTo) return true;
+    return day >= currentDateFrom && day <= currentDateTo;
+  }
+  if (r === 'month') {
+    const today = new Date();
+    const cutoff = `${today.getFullYear()}-${String(today.getMonth()+1).padStart(2,'0')}-01`;
+    return day >= cutoff;
+  }
+  const n = Number(r);
+  if (n > 0) {
+    const today = new Date();
+    const cutoff = new Date(today.getFullYear(), today.getMonth(), today.getDate() - (n - 1));
+    return day >= localDateStr(cutoff);
+  }
+  return true;
+}
+
 function sessStats(sess) {
   const log = dedupe(sess.log || []);
   const exch = log.filter(e => !e.event);

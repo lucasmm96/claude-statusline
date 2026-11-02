@@ -36,16 +36,19 @@ function renderAll() {
   const sessions = getFilteredSessions()
     .sort((a, b) => new Date(b.last_activity_at) - new Date(a.last_activity_at));
 
-  let totalTok = 0, totalComp = 0, totalCR = 0, totalIn = 0;
+  let statCount = 0, totalTok = 0, totalComp = 0, totalCR = 0, totalIn = 0;
   for (const s of sessions) {
-    const st = sessStats(s);
-    totalTok  += st.total;
-    totalComp += st.compacts;
-    totalCR   += st.exch.reduce((x, e) => x + e.cache_read_tokens, 0);
-    totalIn   += st.exch.reduce((x, e) => x + e.input_tokens + e.cache_read_tokens + e.cache_write_tokens, 0);
+    const log = dedupe(s.log || []);
+    const exch = log.filter(e => !e.event && isInDateRange(e.at));
+    const compacts = log.filter(e => e.event === 'compact' && isInDateRange(e.at)).length;
+    if (exch.length > 0 || compacts > 0) statCount++;
+    totalTok  += exch.reduce((x, e) => x + e.input_tokens + e.cache_read_tokens + e.cache_write_tokens + e.output_tokens, 0);
+    totalComp += compacts;
+    totalCR   += exch.reduce((x, e) => x + e.cache_read_tokens, 0);
+    totalIn   += exch.reduce((x, e) => x + e.input_tokens + e.cache_read_tokens + e.cache_write_tokens, 0);
   }
 
-  document.getElementById('s-count').textContent    = sessions.length;
+  document.getElementById('s-count').textContent    = statCount;
   document.getElementById('s-tokens').textContent   = fmtN(totalTok);
   document.getElementById('s-cache').textContent    = totalIn > 0 ? Math.round(totalCR / totalIn * 100) + '%' : '—';
   document.getElementById('s-compacts').textContent = totalComp;
@@ -54,8 +57,27 @@ function renderAll() {
   const costStat = document.getElementById('s-cost-stat');
   const statBar  = document.getElementById('stat-bar');
   if (pricing) {
-    const cost = calcCost(getFilteredSessions(), pricing);
-    const unpriced = calcUnpricedTokens(getFilteredSessions(), pricing);
+    let cost = 0, unpriced = 0;
+    for (const s of sessions) {
+      const modelName = s.model || 'Unknown';
+      const hasModelPrice = pricing.prices[modelName] !== undefined;
+      const defaultIsEmpty = pricing._default.input === 0 && pricing._default.cacheRead === 0 &&
+                             pricing._default.cacheWrite === 0 && pricing._default.output === 0;
+      const modelPrice = pricing.prices[modelName] || pricing._default;
+      const log = dedupe(s.log || []);
+      for (const e of log) {
+        if (e.event || !isInDateRange(e.at)) continue;
+        if (!hasModelPrice && defaultIsEmpty) {
+          unpriced += (e.input_tokens || 0) + (e.cache_read_tokens || 0) +
+                      (e.cache_write_tokens || 0) + (e.output_tokens || 0);
+        } else {
+          cost += (e.input_tokens       || 0) / 1e6 * modelPrice.input;
+          cost += (e.cache_read_tokens  || 0) / 1e6 * modelPrice.cacheRead;
+          cost += (e.cache_write_tokens || 0) / 1e6 * modelPrice.cacheWrite;
+          cost += (e.output_tokens      || 0) / 1e6 * modelPrice.output;
+        }
+      }
+    }
     let costText = fmtCost(cost);
     if (unpriced > 0) costText += ` <span class="cost-warning">⚠ ${fmtN(unpriced)} unpriced</span>`;
     document.getElementById('s-cost').innerHTML = costText;
