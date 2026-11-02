@@ -175,12 +175,29 @@ if [ -n "$API_URL" ] && [ -n "$API_KEY" ]; then
       rmdir "$_APILOCK" 2>/dev/null
     fi
     mkdir "$_APILOCK" 2>/dev/null || exit 0
+    _CURSOR_FILE="$SCRIPT_DIR/.statusline-api-cursor"
+    _DELTA_FILE="$SCRIPT_DIR/.statusline-api-delta.json"
+    node -e "
+const fs = require('fs');
+const [logFile, cursorFile, deltaFile] = process.argv.slice(1);
+const data = JSON.parse(fs.readFileSync(logFile, 'utf8'));
+let cursor = '';
+try { cursor = fs.readFileSync(cursorFile, 'utf8').trim(); } catch(e) {}
+const sevenDaysAgo = new Date(Date.now() - 7*24*3600*1000).toISOString();
+const cutoff = (!cursor || cursor < sevenDaysAgo) ? sevenDaysAgo : cursor;
+const out = {};
+for (const [id, sess] of Object.entries(data.sessions || {})) {
+  if (!sess.last_activity_at || sess.last_activity_at >= cutoff) out[id] = sess;
+}
+fs.writeFileSync(deltaFile, JSON.stringify({ sessions: out }));
+" "$LOG_FILE" "$_CURSOR_FILE" "$_DELTA_FILE"
     curl -s --fail-with-body \
       -X POST "$API_URL/api/ingest" \
       -H "Authorization: Bearer $API_KEY" \
       -H "Content-Type: application/json" \
-      --data-binary @"$LOG_FILE" \
-      >/dev/null 2>&1
+      --data-binary @"$_DELTA_FILE" \
+      >/dev/null 2>&1 && date -u +%Y-%m-%dT%H:%M:%SZ > "$_CURSOR_FILE"
+    rm -f "$_DELTA_FILE"
     rmdir "$_APILOCK" 2>/dev/null
   ) &
 fi
