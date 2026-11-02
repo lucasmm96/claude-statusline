@@ -1,11 +1,12 @@
 function buildLogTable(log, modelPrice) {
   let rows = '', i = 0;
   const cols = modelPrice ? 9 : 8;
-  for (const e of log) {
+  const numbered = log.map(e => ({ ...e, _n: e.event === 'compact' ? null : ++i }));
+  const sorted = [...numbered].sort((a, b) => new Date(b.at) - new Date(a.at));
+  for (const e of sorted) {
     if (e.event === 'compact') {
       rows += `<tr class="compact-row"><td colspan="${cols}">⚡ Compact — context reset to ${e.context_pct}%</td></tr>`;
     } else {
-      i++;
       const t = e.input_tokens + e.cache_read_tokens + e.cache_write_tokens + e.output_tokens;
       const costCell = modelPrice
         ? '<td>' + fmtCost(
@@ -16,7 +17,7 @@ function buildLogTable(log, modelPrice) {
           ) + '</td>'
         : '';
       rows += `<tr>
-        <td>${i}</td><td>${fmtDt(e.at)}</td>
+        <td>${e._n}</td><td>${fmtDt(e.at)}</td>
         <td>${fmtN(e.input_tokens)}</td><td>${fmtN(e.cache_read_tokens)}</td>
         <td>${fmtN(e.cache_write_tokens)}</td><td>${fmtN(e.output_tokens)}</td>
         <td>${fmtN(t)}</td>${costCell}<td>${e.context_pct}%</td>
