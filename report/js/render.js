@@ -10,10 +10,11 @@ function renderProfileBar() {
   )].sort();
 
   const all = Object.values(globalData.sessions);
-  const hasOther = all.some(s => !s.profile);
+  const hasOther = all.some(s => !s.profile && s.log && s.log.some(e => !e.event || e.event === 'compact'));
 
   const bar = document.getElementById('profile-bar');
   if (!profiles.length && !hasOther) { bar.hidden = true; activeProfile = null; return; }
+  if (activeProfile === '__other__' && !hasOther) activeProfile = null;
 
   bar.hidden = false;
   const pills = document.getElementById('profile-pills');
