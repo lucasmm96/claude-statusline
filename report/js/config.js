@@ -13,5 +13,6 @@ const LS_PRICE_OUTPUT      = 'statusline_price_output';
 
 let globalData = null;
 let activeProfile = null;
+let activeModel = null;
 let tokChart = null;
 let ctxChart = null;

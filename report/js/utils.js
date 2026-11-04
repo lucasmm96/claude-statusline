@@ -32,10 +32,16 @@ function fmtDay(dateStr) {
 }
 function getFilteredSessions() {
   if (!globalData) return [];
-  const all = Object.values(globalData.sessions);
-  if (!activeProfile) return all;
-  if (activeProfile === '__other__') return all.filter(s => !s.profile);
-  return all.filter(s => s.profile === activeProfile);
+  let sessions = Object.values(globalData.sessions);
+  if (activeProfile) {
+    sessions = activeProfile === '__other__'
+      ? sessions.filter(s => !s.profile)
+      : sessions.filter(s => s.profile === activeProfile);
+  }
+  if (activeModel) {
+    sessions = sessions.filter(s => s.model === activeModel);
+  }
+  return sessions;
 }
 
 function isInDateRange(isoDate) {

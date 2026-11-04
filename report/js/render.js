@@ -30,7 +30,30 @@ function renderProfileBar() {
 
   makeBtn('All', null);
   profiles.forEach(p => makeBtn(p, p));
-  if (hasOther) makeBtn('Other', '__other__');
+  if (hasOther) makeBtn('other', '__other__');
+}
+
+function renderModelBar() {
+  const models = [...new Set(
+    Object.values(globalData.sessions).map(s => s.model).filter(Boolean)
+  )].sort();
+
+  const bar = document.getElementById('model-bar');
+  if (!models.length) { bar.hidden = true; return; }
+  bar.hidden = false;
+  const pills = document.getElementById('model-pills');
+  pills.innerHTML = '';
+
+  const makeBtn = (label, value) => {
+    const b = document.createElement('button');
+    b.className = 'profile-btn' + (activeModel === value ? ' active' : '');
+    b.textContent = label;
+    b.onclick = () => { activeModel = value; renderAll(); };
+    pills.appendChild(b);
+  };
+
+  makeBtn('All', null);
+  models.forEach(m => makeBtn(m, m));
 }
 
 function renderAll() {
@@ -150,6 +173,7 @@ function renderAll() {
   }
 
   renderProfileBar();
+  renderModelBar();
   initDailySection();
 }
 
