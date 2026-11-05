@@ -1,6 +1,6 @@
 # Claude Usage Stats
 
-A Claude Code statusline hook that persists token usage and context window data across sessions — including `/compact` resets and `--resume` reopens.
+A Claude Code status line hook that persists token usage and context window data across sessions — including `/compact` resets and `--resume` reopens.
 
 ```
 Model: Sonnet 4.6 | Context: 42% | Tokens: 1.2M
@@ -70,7 +70,7 @@ Start a Claude Code session and send any message. After the first response, you 
 Model: Sonnet 4.6 | Context: 42% | Tokens: 109.0k
 ```
 
-The log file is created automatically at `~/.claude/claude-usage-stats/claude-usage-stats.json`.
+The log file is created automatically at `~/.claude/claude-usage-stats/claude-usage-stats-log.json`.
 
 ---
 
@@ -84,7 +84,7 @@ Or download/clone this repo and open `report/index.html` directly in any browser
 
 ### Option A — Load a local file
 
-Click **Load file** and select your `~/.claude/claude-usage-stats/claude-usage-stats.json`.
+Click **Load file** and select your `~/.claude/claude-usage-stats/claude-usage-stats-log.json`.
 
 ### Option B — Load from a URL
 
@@ -103,7 +103,7 @@ Click **🔒 Private repo** in the header. A modal will ask for:
 | Field | Description |
 |---|---|
 | Personal Access Token | A GitHub PAT with `Contents: Read-only` on your repo |
-| Repository | `owner/repo` (e.g. `lucasmm96/my-statusline-log`) |
+| Repository | `owner/repo` (e.g. `lucasmm96/my-usage-stats-backup`) |
 | File path | Path to the JSON file inside the repo (default: `sessions.json`) |
 
 The PAT is saved to `localStorage` and never sent anywhere other than `api.github.com`. To generate one: GitHub → Settings → Developer settings → Personal access tokens → Fine-grained tokens → select your repo → Contents: Read-only.
@@ -125,10 +125,10 @@ Click **$ Pricing** in the header to configure token prices per model (USD per m
 
 ### Profiles
 
-Tag sessions with a profile name by setting `STATUSLINE_PROFILE` in your environment:
+Tag sessions with a profile name by setting `CLAUDE_USAGE_PROFILE` in your environment:
 
 ```bash
-export STATUSLINE_PROFILE="work"
+export CLAUDE_USAGE_PROFILE="work"
 ```
 
 Or inline in `settings.json`:
@@ -137,7 +137,7 @@ Or inline in `settings.json`:
 {
   "statusLine": {
     "type": "command",
-    "command": "STATUSLINE_PROFILE=work bash ~/.claude/claude-usage-stats/claude-usage-stats.sh"
+    "command": "CLAUDE_USAGE_PROFILE=work bash ~/.claude/claude-usage-stats/claude-usage-stats.sh"
   }
 }
 ```
@@ -152,13 +152,13 @@ When loading from a URL, private repo, or database, the report polls for changes
 
 ## Optional: database backend (API + Neon)
 
-The script can upload your log to a PostgreSQL database after each response via a Vercel serverless API. This runs in the background and does not affect the statusline display.
+The script can upload your log to a PostgreSQL database after each response via a Vercel serverless API. This runs in the background and does not affect the status line display.
 
 ### How it works
 
 ```
 claude-usage-stats.sh
-  ├── writes ~/.claude/claude-usage-stats/claude-usage-stats.json  (always, primary)
+  ├── writes ~/.claude/claude-usage-stats/claude-usage-stats-log.json  (always, primary)
   ├── git commit+push to backup repo             (if BACKUP_REPO configured)
   └── curl POST /api/ingest                      (if API_URL configured, background)
 

@@ -1,6 +1,6 @@
 # Private Repo Backup
 
-The script can automatically commit and push your session log to a private git repository after each Claude Code response. This runs in the background and is completely transparent — it does not affect the statusline display or add any delay.
+The script can automatically commit and push your session log to a private git repository after each Claude Code response. This runs in the background and is completely transparent — it does not affect the status line display or add any delay.
 
 ## How it works
 
@@ -58,4 +58,4 @@ If you want to host the report on GitHub Pages and load data from your private r
 - The script does not push on every response — only commits. Pushes are throttled to once per `BACKUP_PUSH_INTERVAL` seconds.
 - If a push fails (no internet, auth issue), it is silently retried next time the interval elapses.
 - The `.last_push` file inside the repo tracks the last push timestamp.
-- If `BACKUP_REPO` is set but the directory does not contain a `.git` folder, the script falls back to `~/.claude/claude-usage-stats/claude-usage-stats.json` silently.
+- If `BACKUP_REPO` is set but the directory does not contain a `.git` folder, the script falls back to `~/.claude/claude-usage-stats/claude-usage-stats-log.json` silently.

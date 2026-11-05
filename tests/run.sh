@@ -40,7 +40,7 @@ get_sess_model() {
   node -e "
 const d = JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'));
 process.stdout.write(d.sessions[process.argv[2]]?.model || '');
-" "$tmp/claude-usage-stats.json" "$sid" 2>/dev/null || echo ""
+" "$tmp/claude-usage-stats-log.json" "$sid" 2>/dev/null || echo ""
 }
 
 get_entry_model() {

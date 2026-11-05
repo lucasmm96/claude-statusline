@@ -1,7 +1,7 @@
 {
-  "name": "statusline-api",
+  "name": "claude-usage-stats-api",
   "version": "1.0.0",
-  "description": "Serverless API for statusline data ingestion and retrieval",
+  "description": "Serverless API for claude-usage-stats data ingestion and retrieval",
   "private": true,
   "engines": {
     "node": "22.x"

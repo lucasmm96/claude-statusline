@@ -1,6 +1,6 @@
 # Log Format
 
-The log is stored as `~/.claude/claude-usage-stats/claude-usage-stats.json` (or inside your backup repo if configured).
+The log is stored as `~/.claude/claude-usage-stats/claude-usage-stats-log.json` (or inside your backup repo if configured).
 
 ## Top-level structure
 
@@ -36,7 +36,7 @@ The log is stored as `~/.claude/claude-usage-stats/claude-usage-stats.json` (or 
 |---|---|
 | `session_id` | UUID from Claude Code's hook payload; stable across `--resume` |
 | `session_name` | User-provided session name, if any |
-| `profile` | Value of `$STATUSLINE_PROFILE` at the time of the exchange; `null` if unset |
+| `profile` | Value of `$CLAUDE_USAGE_PROFILE` at the time of the exchange; `null` if unset |
 | `model` | Commercial display name of the model at last activity (e.g. `"Nemotron 3.5 Lightning (Free)"`) |
 | `started_at` | ISO timestamp of the first recorded exchange |
 | `last_activity_at` | ISO timestamp of the most recent exchange |

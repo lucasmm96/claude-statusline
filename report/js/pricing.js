@@ -27,7 +27,7 @@ function migrateOldPrices() {
 
 function getPricingData() {
   try {
-    const raw = localStorage.getItem('statusline_pricing');
+    const raw = localStorage.getItem('claude_usage_stats_pricing');
     if (!raw) return { prices: {}, _default: { input: 0, cacheRead: 0, cacheWrite: 0, output: 0 } };
     return JSON.parse(raw);
   } catch(e) { return { prices: {}, _default: { input: 0, cacheRead: 0, cacheWrite: 0, output: 0 } }; }
@@ -35,7 +35,7 @@ function getPricingData() {
 
 function savePricingData(data) {
   try {
-    localStorage.setItem('statusline_pricing', JSON.stringify(data));
+    localStorage.setItem('claude_usage_stats_pricing', JSON.stringify(data));
   } catch(e) {}
 }
 
@@ -249,7 +249,7 @@ function savePrices() {
 function clearPrices() {
   if (!confirm('Remove all saved pricing from this browser?')) return;
   try {
-    localStorage.removeItem('statusline_pricing');
+    localStorage.removeItem('claude_usage_stats_pricing');
   } catch(e) {}
   updatePricingButton();
   closePricingModal();

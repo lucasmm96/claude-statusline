@@ -14,10 +14,10 @@ CONF="$SCRIPT_DIR/backup.conf"
 # shellcheck source=/dev/null
 [ -f "$CONF" ] && source "$CONF"
 
-LOG_FILE="$SCRIPT_DIR/claude-usage-stats.json"
+LOG_FILE="$SCRIPT_DIR/claude-usage-stats-log.json"
 CACHE_FILE="$SCRIPT_DIR/models-cache.json"
 
-result=$(node - "$input" "$LOG_FILE" "$PPID_FALLBACK" "${STATUSLINE_PROFILE:-}" "$CACHE_FILE" 2>/dev/null << 'JSEOF'
+result=$(node - "$input" "$LOG_FILE" "$PPID_FALLBACK" "${CLAUDE_USAGE_PROFILE:-}" "$CACHE_FILE" 2>/dev/null << 'JSEOF'
 const fs = require('fs');
 const [,, rawInput, logFile, ppidFallback, profileArg, cacheFilePath] = process.argv;
 

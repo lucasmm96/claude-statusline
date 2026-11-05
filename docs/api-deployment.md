@@ -63,7 +63,7 @@ The report auto-saves the key in `localStorage` and reconnects on every page loa
 
 ```
 claude-usage-stats.sh
-  ├── writes ~/.claude/claude-usage-stats/claude-usage-stats.json  (always, primary)
+  ├── writes ~/.claude/claude-usage-stats/claude-usage-stats-log.json  (always, primary)
   ├── git commit+push to backup repo             (if BACKUP_REPO configured)
   └── curl POST /api/ingest                      (if API_URL configured, background)
 
@@ -101,7 +101,7 @@ curl -X POST "$API_URL/api/ingest" ...
 curl -X POST "$API_URL/api/ingest" \
   -H "Authorization: Bearer $API_KEY" \
   -H "Content-Type: application/json" \
-  -d @~/.claude/claude-usage-stats/claude-usage-stats.json
+  -d @~/.claude/claude-usage-stats/claude-usage-stats-log.json
 ```
 
 ---

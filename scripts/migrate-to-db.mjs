@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// One-shot migration: sends ~/.claude/claude-usage-stats/claude-usage-stats.json to the API in batches.
+// One-shot migration: sends ~/.claude/claude-usage-stats/claude-usage-stats-log.json to the API in batches.
 // Usage: node scripts/migrate-to-db.mjs [batch_size]
 
 import { readFileSync } from 'fs';
@@ -15,7 +15,7 @@ if (!API_KEY) {
   process.exit(1);
 }
 
-const filePath = join(homedir(), '.claude', 'claude-usage-stats', 'claude-usage-stats.json');
+const filePath = join(homedir(), '.claude', 'claude-usage-stats', 'claude-usage-stats-log.json');
 const data = JSON.parse(readFileSync(filePath, 'utf8'));
 const entries = Object.entries(data.sessions || {});
 

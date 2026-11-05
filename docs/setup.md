@@ -13,7 +13,7 @@ Claude Code calls the `statusLine.command` after every response, passing a JSON 
 
 The script processes this payload with an inline Node.js script (`node -`), which:
 
-1. Reads `~/.claude/claude-usage-stats/claude-usage-stats.json`
+1. Reads `~/.claude/claude-usage-stats/claude-usage-stats-log.json`
 2. Finds or creates the session entry
 3. Detects compact events (cumulative totals decrease)
 4. Deduplicates streaming artifacts (same token values fired multiple times per exchange)
