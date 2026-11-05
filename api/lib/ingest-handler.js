@@ -83,7 +83,8 @@ async function ingestSessions(sql, payload) {
               ${e.cache_write_tokens}, ${e.output_tokens}, ${e.context_pct},
               ${e.model}
             )
-            ON CONFLICT DO NOTHING
+            ON CONFLICT (session_id, at, COALESCE(event, ''))
+            DO UPDATE SET model = COALESCE(EXCLUDED.model, log_entries.model)
           `)
         );
         logEntriesInserted += chunk.length;
