@@ -26,13 +26,13 @@ make_test_env() {
   tmp=$(mktemp -d -p "$NODE_TMPDIR" 2>/dev/null || mktemp -d)
   # Convert backslashes to forward slashes (Windows: Node.js accepts both; avoids JSON escaping issues)
   tmp="${tmp//\\//}"
-  cp "$SCRIPT" "$tmp/statusline-command.sh"
+  cp "$SCRIPT" "$tmp/claude-usage-stats.sh"
   echo "$tmp"
 }
 
 run_in_env() {
   local tmp="$1" payload="$2"
-  bash "$tmp/statusline-command.sh" <<< "$payload" 2>/dev/null
+  bash "$tmp/claude-usage-stats.sh" <<< "$payload" 2>/dev/null
 }
 
 get_sess_model() {
@@ -40,7 +40,7 @@ get_sess_model() {
   node -e "
 const d = JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'));
 process.stdout.write(d.sessions[process.argv[2]]?.model || '');
-" "$tmp/statusline-sessions.json" "$sid" 2>/dev/null || echo ""
+" "$tmp/claude-usage-stats.json" "$sid" 2>/dev/null || echo ""
 }
 
 get_entry_model() {
@@ -49,7 +49,7 @@ get_entry_model() {
 const d = JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'));
 const log = (d.sessions[process.argv[2]]?.log || []).filter(e => !e.event);
 process.stdout.write(log[Number(process.argv[3])]?.model || '');
-" "$tmp/statusline-sessions.json" "$sid" "$idx" 2>/dev/null || echo ""
+" "$tmp/claude-usage-stats.json" "$sid" "$idx" 2>/dev/null || echo ""
 }
 
 get_state_field() {
@@ -58,7 +58,7 @@ get_state_field() {
 const d = JSON.parse(require('fs').readFileSync(process.argv[1],'utf8'));
 const v = d.sessions[process.argv[2]]?._state?.[process.argv[3]];
 process.stdout.write(v != null ? String(v) : '');
-" "$tmp/statusline-sessions.json" "$sid" "$field" 2>/dev/null || echo ""
+" "$tmp/claude-usage-stats.json" "$sid" "$field" 2>/dev/null || echo ""
 }
 
 # ---------------------------------------------------------------------------
@@ -92,7 +92,7 @@ printf '%s\n' \
   '{"type":"assistant","message":{"model":"nvidia/nemotron-3.5-lightning:free","role":"assistant","content":[]},"requestedModel":"openrouter/free","session_id":"t2"}' \
   > "$TRANSCRIPT"
 printf '%s' '{"fetched_at":"2026-01-01T00:00:00.000Z","models":{"nvidia/nemotron-3.5-lightning:free":"NVIDIA: Nemotron 3.5 Lightning"}}' \
-  > "$TMP/statusline-models-cache.json"
+  > "$TMP/models-cache.json"
 PAYLOAD="{\"session_id\":\"t2\",\"model\":{\"display_name\":\"openrouter/free\"},\"transcript_path\":\"$TRANSCRIPT\",\"context_window\":{\"used_percentage\":10,\"total_input_tokens\":5000,\"total_output_tokens\":500,\"current_usage\":{\"input_tokens\":5,\"cache_read_input_tokens\":4000,\"cache_creation_input_tokens\":100,\"output_tokens\":200}}}"
 OUT=$(run_in_env "$TMP" "$PAYLOAD")
 SM=$(get_sess_model "$TMP" "t2")
@@ -133,7 +133,7 @@ TRANSCRIPT="$TMP/session.jsonl"
 printf '%s\n' \
   '{"type":"assistant","message":{"model":"nvidia/nemotron-3.5-lightning:free","role":"assistant","content":[]},"requestedModel":"openrouter/free","session_id":"t5"}' \
   > "$TRANSCRIPT"
-printf 'NOT VALID JSON' > "$TMP/statusline-models-cache.json"
+printf 'NOT VALID JSON' > "$TMP/models-cache.json"
 PAYLOAD="{\"session_id\":\"t5\",\"model\":{\"display_name\":\"openrouter/free\"},\"transcript_path\":\"$TRANSCRIPT\",\"context_window\":{\"used_percentage\":5,\"total_input_tokens\":1000,\"total_output_tokens\":100,\"current_usage\":{\"input_tokens\":1,\"cache_read_input_tokens\":800,\"cache_creation_input_tokens\":50,\"output_tokens\":100}}}"
 OUT=$(run_in_env "$TMP" "$PAYLOAD")
 if echo "$OUT" | grep -q 'Nemotron' && echo "$OUT" | grep -q '(Free)'; then
@@ -182,7 +182,7 @@ printf '%s\n' \
   '{"type":"assistant","message":{"model":"nvidia/nemotron-3.5-lightning:free","role":"assistant","content":[]},"requestedModel":"openrouter/free","session_id":"te2"}' \
   > "$TRANSCRIPT"
 printf '%s' '{"fetched_at":"2026-01-01T00:00:00.000Z","models":{"nvidia/nemotron-3.5-lightning:free":"NVIDIA: Nemotron (free tier)"}}' \
-  > "$TMP/statusline-models-cache.json"
+  > "$TMP/models-cache.json"
 PAYLOAD="{\"session_id\":\"te2\",\"model\":{\"display_name\":\"openrouter/free\"},\"transcript_path\":\"$TRANSCRIPT\",\"context_window\":{\"used_percentage\":5,\"total_input_tokens\":1000,\"total_output_tokens\":100,\"current_usage\":{\"input_tokens\":1,\"cache_read_input_tokens\":800,\"cache_creation_input_tokens\":50,\"output_tokens\":100}}}"
 OUT=$(run_in_env "$TMP" "$PAYLOAD")
 # "free tier" does not match /[\s(:]+free[)\s]*$/ — the regex requires free at the very end

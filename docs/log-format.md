@@ -1,6 +1,6 @@
 # Log Format
 
-The log is stored as `~/.claude/statusline/statusline-sessions.json` (or inside your backup repo if configured).
+The log is stored as `~/.claude/claude-usage-stats/claude-usage-stats.json` (or inside your backup repo if configured).
 
 ## Top-level structure
 
@@ -74,7 +74,7 @@ The log is stored as `~/.claude/statusline/statusline-sessions.json` (or inside 
 
 **Note on `model` accuracy:** the script reads the JSONL transcript incrementally per hook call. If two exchanges complete between hook calls, both log entries will carry the model slug from the last `assistant` entry scanned, not necessarily their own. In practice this is rare and has no effect on token counts.
 
-**Note on heuristic names:** when `statusline-models-cache.json` does not exist or does not contain an entry for the slug (e.g. on first install), the script generates a name heuristically by stripping the provider prefix and `:free`/`:beta`/`:nitro` suffixes and capitalizing words. Example: `anthropic/claude-sonnet-4-5` → `Claude Sonnet 4 5`. The cache (fetched automatically in background from `openrouter.ai/api/v1/models`, TTL 24h) corrects these names on subsequent calls.
+**Note on heuristic names:** when `models-cache.json` does not exist or does not contain an entry for the slug (e.g. on first install), the script generates a name heuristically by stripping the provider prefix and `:free`/`:beta`/`:nitro` suffixes and capitalizing words. Example: `anthropic/claude-sonnet-4-5` → `Claude Sonnet 4 5`. The cache (fetched automatically in background from `openrouter.ai/api/v1/models`, TTL 24h) corrects these names on subsequent calls.
 
 ## Log entry: compact event
 

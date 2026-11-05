@@ -4,18 +4,18 @@ input=$(cat)
 PPID_FALLBACK="$PPID"
 
 # --- Optional backup config ---
-# Create statusline-backup.conf in the same directory as this script to enable background git push.
+# Create backup.conf in the same directory as this script to enable background git push.
 BACKUP_REPO=""               # absolute path to local git clone
 BACKUP_BRANCH="main"
 BACKUP_FILE="sessions.json"
 BACKUP_PUSH_INTERVAL=60      # min seconds between pushes (default: 1 min)
 
-CONF="$SCRIPT_DIR/statusline-backup.conf"
+CONF="$SCRIPT_DIR/backup.conf"
 # shellcheck source=/dev/null
 [ -f "$CONF" ] && source "$CONF"
 
-LOG_FILE="$SCRIPT_DIR/statusline-sessions.json"
-CACHE_FILE="$SCRIPT_DIR/statusline-models-cache.json"
+LOG_FILE="$SCRIPT_DIR/claude-usage-stats.json"
+CACHE_FILE="$SCRIPT_DIR/models-cache.json"
 
 result=$(node - "$input" "$LOG_FILE" "$PPID_FALLBACK" "${STATUSLINE_PROFILE:-}" "$CACHE_FILE" 2>/dev/null << 'JSEOF'
 const fs = require('fs');
@@ -181,7 +181,7 @@ IFS=$'\t' read -r model ctx_int ctx_color ctx_suffix tok_k <<< "$result"
 # --- Background backup (if configured) ---
 if [ -n "$BACKUP_REPO" ] && [ -d "$BACKUP_REPO/.git" ]; then
   (
-    _BKLOCK="$BACKUP_REPO/.statusline.lock.d"
+    _BKLOCK="$BACKUP_REPO/.claude-usage-stats.lock.d"
     if [ -d "$_BKLOCK" ]; then
       _AGE=$(( $(date +%s) - $(date -r "$_BKLOCK" +%s 2>/dev/null || echo 0) ))
       [ "$_AGE" -lt 120 ] && exit 0
@@ -206,15 +206,15 @@ fi
 # --- Background API upload (if configured) ---
 if [ -n "$API_URL" ] && [ -n "$API_KEY" ]; then
   (
-    _APILOCK="$SCRIPT_DIR/.statusline-api.lock.d"
+    _APILOCK="$SCRIPT_DIR/.claude-usage-stats-api.lock.d"
     if [ -d "$_APILOCK" ]; then
       _AGE=$(( $(date +%s) - $(date -r "$_APILOCK" +%s 2>/dev/null || echo 0) ))
       [ "$_AGE" -lt 120 ] && exit 0
       rmdir "$_APILOCK" 2>/dev/null
     fi
     mkdir "$_APILOCK" 2>/dev/null || exit 0
-    _CURSOR_FILE="$SCRIPT_DIR/.statusline-api-cursor"
-    _DELTA_FILE="$SCRIPT_DIR/.statusline-api-delta.json"
+    _CURSOR_FILE="$SCRIPT_DIR/.claude-usage-stats-api-cursor"
+    _DELTA_FILE="$SCRIPT_DIR/.claude-usage-stats-api-delta.json"
     node -e "
 const fs = require('fs');
 const [logFile, cursorFile, deltaFile] = process.argv.slice(1);
@@ -244,13 +244,13 @@ fi
 if command -v curl >/dev/null 2>&1; then
   (
     _MCACHE="$CACHE_FILE"
-    _MLOCK="$SCRIPT_DIR/.statusline-models.lock.d"
+    _MLOCK="$SCRIPT_DIR/.claude-usage-stats-models.lock.d"
     if [ -f "$_MCACHE" ]; then
       _AGE=$(( $(date +%s) - $(date -r "$_MCACHE" +%s 2>/dev/null || echo 0) ))
       [ "$_AGE" -lt 86400 ] && exit 0
     fi
     mkdir "$_MLOCK" 2>/dev/null || exit 0
-    _TMP="$SCRIPT_DIR/.statusline-models-tmp.$$.json"
+    _TMP="$SCRIPT_DIR/.claude-usage-stats-models-tmp.$$.json"
     curl -sf --max-time 10 --connect-timeout 5 \
       "https://openrouter.ai/api/v1/models" -o "$_TMP" 2>/dev/null
     if [ -f "$_TMP" ]; then

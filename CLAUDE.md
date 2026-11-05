@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-A Claude Code statusline hook that persists token usage and context window data across sessions. Users install `scripts/statusline-command.sh` into `~/.claude/statusline/` and register it in `~/.claude/settings.json`. There is no build step, no package.json, and no test suite.
+A Claude Code statusline hook that persists token usage and context window data across sessions. Users install `scripts/statusline-command.sh` into `~/.claude/claude-usage-stats/` and register it in `~/.claude/settings.json`. There is no build step, no package.json, and no test suite.
 
 ## Files
 
@@ -19,7 +19,7 @@ A Claude Code statusline hook that persists token usage and context window data 
 
 1. Bash reads the full stdin payload into `$input`
 2. Passes it to an inline `node -` script via heredoc (`JSEOF`)
-3. Node.js parses the JSON, reads `statusline-sessions.json`, finds/creates the session by `session_id`, then:
+3. Node.js parses the JSON, reads `~/.claude/claude-usage-stats/claude-usage-stats.json`, finds/creates the session by `session_id`, then:
    - Detects compact events: `(total_in + total_out)` decreasing vs previous
    - Deduplicates streaming artifacts: identical token values on consecutive calls
    - Scans new bytes of the JSONL transcript (from `title_scan_offset`) for `custom-title` events
