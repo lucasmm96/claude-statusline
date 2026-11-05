@@ -31,9 +31,9 @@ Model: Sonnet 4.6 | Context: 42% | Tokens: 1.2M
 
 ```bash
 mkdir -p ~/.claude/claude-usage-stats
-curl -fsSL https://raw.githubusercontent.com/lucasmm96/claude-usage-stats/master/scripts/statusline-command.sh \
-  -o ~/.claude/claude-usage-stats/statusline-command.sh
-chmod +x ~/.claude/claude-usage-stats/statusline-command.sh
+curl -fsSL https://raw.githubusercontent.com/lucasmm96/claude-usage-stats/master/scripts/claude-usage-stats.sh \
+  -o ~/.claude/claude-usage-stats/claude-usage-stats.sh
+chmod +x ~/.claude/claude-usage-stats/claude-usage-stats.sh
 ```
 
 Or clone the repo and copy manually:
@@ -41,8 +41,8 @@ Or clone the repo and copy manually:
 ```bash
 git clone https://github.com/lucasmm96/claude-usage-stats.git
 mkdir -p ~/.claude/claude-usage-stats
-cp claude-usage-stats/scripts/statusline-command.sh ~/.claude/claude-usage-stats/
-chmod +x ~/.claude/claude-usage-stats/statusline-command.sh
+cp claude-usage-stats/scripts/claude-usage-stats.sh ~/.claude/claude-usage-stats/
+chmod +x ~/.claude/claude-usage-stats/claude-usage-stats.sh
 ```
 
 ### Step 2 — Register the hook in Claude Code settings
@@ -53,7 +53,7 @@ Open (or create) `~/.claude/settings.json` and add the `statusLine` key:
 {
   "statusLine": {
     "type": "command",
-    "command": "bash ~/.claude/claude-usage-stats/statusline-command.sh"
+    "command": "bash ~/.claude/claude-usage-stats/claude-usage-stats.sh"
   }
 }
 ```
@@ -137,7 +137,7 @@ Or inline in `settings.json`:
 {
   "statusLine": {
     "type": "command",
-    "command": "STATUSLINE_PROFILE=work bash ~/.claude/claude-usage-stats/statusline-command.sh"
+    "command": "STATUSLINE_PROFILE=work bash ~/.claude/claude-usage-stats/claude-usage-stats.sh"
   }
 }
 ```
@@ -157,7 +157,7 @@ The script can upload your log to a PostgreSQL database after each response via 
 ### How it works
 
 ```
-statusline-command.sh
+claude-usage-stats.sh
   ├── writes ~/.claude/claude-usage-stats/claude-usage-stats.json  (always, primary)
   ├── git commit+push to backup repo             (if BACKUP_REPO configured)
   └── curl POST /api/ingest                      (if API_URL configured, background)
@@ -214,7 +214,7 @@ When you rename a session in the Claude Code UI (or use `--title`), the new name
 
 **Nothing appears after a response:**
 - Verify Node.js is on your PATH: `node --version`
-- Run the script manually: `echo '{}' | bash ~/.claude/claude-usage-stats/statusline-command.sh`
+- Run the script manually: `echo '{}' | bash ~/.claude/claude-usage-stats/claude-usage-stats.sh`
 - Check that `settings.json` is valid JSON
 
 **Context shows `0%` permanently:**

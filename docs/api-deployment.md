@@ -62,7 +62,7 @@ The report auto-saves the key in `localStorage` and reconnects on every page loa
 ## How it works
 
 ```
-statusline-command.sh
+claude-usage-stats.sh
   ├── writes ~/.claude/claude-usage-stats/claude-usage-stats.json  (always, primary)
   ├── git commit+push to backup repo             (if BACKUP_REPO configured)
   └── curl POST /api/ingest                      (if API_URL configured, background)

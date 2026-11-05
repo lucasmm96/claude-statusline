@@ -1,12 +1,12 @@
 #!/usr/bin/env bash
-# tests/run.sh — fixture-based tests for statusline-command.sh
+# tests/run.sh — fixture-based tests for claude-usage-stats.sh
 # Usage: bash tests/run.sh
 # API tests (T6-T9) require DATABASE_URL to be set; otherwise they are skipped.
 # Windows-compatible: no /dev/stdin, no /dev/null for node reads.
 
 set -euo pipefail
 REPO_ROOT="$(cd "$(dirname "$0")/.." && pwd)"
-SCRIPT="$REPO_ROOT/scripts/statusline-command.sh"
+SCRIPT="$REPO_ROOT/scripts/claude-usage-stats.sh"
 PASS=0; FAIL=0; SKIP=0
 
 # On Windows, Git Bash's /tmp is not visible to Node.js (which uses native paths).

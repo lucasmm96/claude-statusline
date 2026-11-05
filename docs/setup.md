@@ -31,7 +31,7 @@ On Windows, use Git Bash or WSL to run bash scripts.
 
 ```bash
 mkdir -p ~/.claude/claude-usage-stats
-cp scripts/statusline-command.sh ~/.claude/claude-usage-stats/
+cp scripts/claude-usage-stats.sh ~/.claude/claude-usage-stats/
 ```
 
 **Step 2 — Add to `~/.claude/settings.json`:**
@@ -40,7 +40,7 @@ cp scripts/statusline-command.sh ~/.claude/claude-usage-stats/
 {
   "statusLine": {
     "type": "command",
-    "command": "bash ~/.claude/claude-usage-stats/statusline-command.sh"
+    "command": "bash ~/.claude/claude-usage-stats/claude-usage-stats.sh"
   }
 }
 ```
@@ -57,10 +57,10 @@ Model: Sonnet 4.6 | Context: 42% | Tokens: 109.0k
 
 **Nothing appears:**
 - Check that Node.js is on your `$PATH`: `node --version`
-- Check that the script is executable: `chmod +x ~/.claude/claude-usage-stats/statusline-command.sh`
+- Check that the script is executable: `chmod +x ~/.claude/claude-usage-stats/claude-usage-stats.sh`
 - Run the script manually with sample input to see errors:
   ```bash
-  echo '{}' | bash ~/.claude/claude-usage-stats/statusline-command.sh
+  echo '{}' | bash ~/.claude/claude-usage-stats/claude-usage-stats.sh
   ```
 
 **Context shows `0%` or `0~%` permanently:**

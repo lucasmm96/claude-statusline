@@ -4,18 +4,18 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project overview
 
-A Claude Code statusline hook that persists token usage and context window data across sessions. Users install `scripts/statusline-command.sh` into `~/.claude/claude-usage-stats/` and register it in `~/.claude/settings.json`. There is no build step, no package.json, and no test suite.
+A Claude Code statusline hook that persists token usage and context window data across sessions. Users install `scripts/claude-usage-stats.sh` into `~/.claude/claude-usage-stats/` and register it in `~/.claude/settings.json`. There is no build step, no package.json, and no test suite.
 
 ## Files
 
-- **`scripts/statusline-command.sh`** — the primary deliverable. A bash script with an embedded `node -` one-liner (no npm deps). Claude Code calls it after every response, piping a JSON payload to stdin.
+- **`scripts/claude-usage-stats.sh`** — the primary deliverable. A bash script with an embedded `node -` one-liner (no npm deps). Claude Code calls it after every response, piping a JSON payload to stdin.
 - **`report/index.html`** — a zero-dependency standalone SPA (uses CDN Chart.js). Opens directly in any browser. All data loading and rendering is self-contained in this single file.
 - **`examples/sessions.example.json`** — anonymized sample data. Update this when the log schema changes.
 - **`docs/`** — user-facing documentation. `log-format.md` is the authoritative schema reference.
 
 ## Architecture
 
-### Hook pipeline (`statusline-command.sh`)
+### Hook pipeline (`claude-usage-stats.sh`)
 
 1. Bash reads the full stdin payload into `$input`
 2. Passes it to an inline `node -` script via heredoc (`JSEOF`)
@@ -47,13 +47,13 @@ Three data-loading paths, all converge to the same `render(data)` function:
 Test the script manually by piping a sample payload:
 
 ```bash
-echo '{"session_id":"test-123","model":{"display_name":"Sonnet 4.6"},"context_window":{"used_percentage":42,"total_input_tokens":100000,"total_output_tokens":5000,"current_usage":{"input_tokens":10,"cache_read_input_tokens":80000,"cache_creation_input_tokens":1000,"output_tokens":500}}}' | bash scripts/statusline-command.sh
+echo '{"session_id":"test-123","model":{"display_name":"Sonnet 4.6"},"context_window":{"used_percentage":42,"total_input_tokens":100000,"total_output_tokens":5000,"current_usage":{"input_tokens":10,"cache_read_input_tokens":80000,"cache_creation_input_tokens":1000,"output_tokens":500}}}' | bash scripts/claude-usage-stats.sh
 ```
 
 To test with an empty/malformed payload (should degrade gracefully):
 
 ```bash
-echo '{}' | bash scripts/statusline-command.sh
+echo '{}' | bash scripts/claude-usage-stats.sh
 ```
 
 The Node.js portion can be extracted and run with `node -e` for isolated debugging.
