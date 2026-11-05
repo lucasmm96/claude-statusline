@@ -37,13 +37,13 @@ When prompted to set up the project, point it to `lucas-martins-menezes-projects
 | `DATABASE_URL` | connection string from step 1 |
 | `API_KEY` | key from step 2 |
 
-After deploy, Vercel gives you a URL like `https://claude-statusline-report.vercel.app`.
+After deploy, Vercel gives you a URL like `https://claude-usage-stats.vercel.app`.
 
 ### 4. Configure the hook
 
 Add to `~/.claude/statusline/statusline-backup.conf`:
 ```bash
-API_URL="https://claude-statusline-report.vercel.app"
+API_URL="https://claude-usage-stats.vercel.app"
 API_KEY="a3f8c2d1e9b04..."
 ```
 
@@ -52,7 +52,7 @@ If `API_URL` is unset, the block is skipped silently.
 
 ### 5. Open the report
 
-Go to `https://claude-statusline-report.vercel.app` in your browser. Click **Database**, enter only the
+Go to `https://claude-usage-stats.vercel.app` in your browser. Click **Database**, enter only the
 **API Key** (leave the URL field blank — same domain), and click **Connect**.
 
 The report auto-saves the key in `localStorage` and reconnects on every page load.
@@ -67,7 +67,7 @@ statusline-command.sh
   ├── git commit+push to backup repo             (if BACKUP_REPO configured)
   └── curl POST /api/ingest                      (if API_URL configured, background)
 
-https://claude-statusline-report.vercel.app/
+https://claude-usage-stats.vercel.app/
   ├── /            → report/index.html           (static SPA)
   ├── /api/ingest  → api/ingest.js               (serverless function)
   └── /api/sessions → api/sessions.js            (serverless function)
@@ -78,7 +78,7 @@ https://claude-statusline-report.vercel.app/
 ## Testing
 
 ```bash
-API_URL="https://claude-statusline-report.vercel.app"
+API_URL="https://claude-usage-stats.vercel.app"
 API_KEY="your-key"
 
 # Ingest example data

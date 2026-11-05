@@ -6,7 +6,7 @@ import { readFileSync } from 'fs';
 import { homedir } from 'os';
 import { join } from 'path';
 
-const API_URL = process.env.API_URL || 'https://claude-statusline-report.vercel.app';
+const API_URL = process.env.API_URL || 'https://claude-usage-stats.vercel.app';
 const API_KEY = process.env.API_KEY;
 const BATCH = parseInt(process.argv[2] || '10', 10);
 

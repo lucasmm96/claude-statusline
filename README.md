@@ -78,7 +78,7 @@ The log file is created automatically at `~/.claude/statusline/statusline-sessio
 
 The report page visualizes your session history: per-exchange token breakdown (input, cache read, cache write, output), context usage timeline, compact events, and aggregate stats.
 
-**Hosted version:** `https://claude-statusline-report.vercel.app`
+**Hosted version:** `https://claude-usage-stats.vercel.app`
 
 Or download/clone this repo and open `report/index.html` directly in any browser — no server needed.
 
@@ -162,7 +162,7 @@ statusline-command.sh
   ├── git commit+push to backup repo             (if BACKUP_REPO configured)
   └── curl POST /api/ingest                      (if API_URL configured, background)
 
-https://claude-statusline-report.vercel.app/
+https://claude-usage-stats.vercel.app/
   ├── /             → report SPA (static)
   ├── /api/ingest   → serverless function (POST)
   └── /api/sessions → serverless function (GET)
