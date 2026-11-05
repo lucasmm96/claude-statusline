@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Claude Usage Stats</title>
-  <link rel="icon" type="image/svg+xml" href="assets/claude-icon.svg">
+  <link rel="icon" type="image/svg+xml" href="assets/logo-full.svg">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
   <link rel="stylesheet" href="css/tokens.css">
   <link rel="stylesheet" href="css/base.css">
@@ -18,9 +18,7 @@
 
 <header>
   <div class="header-brand">
-    <svg class="header-icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" aria-hidden="true">
-      <path d="M 50 8 L 95 28 L 95 50 L 50 92 L 5 50 L 5 28 Z M 30 30 C 22 30 16 36 16 44 C 16 52 22 58 30 58 L 50 68 L 70 58 C 78 58 84 52 84 44 C 84 36 78 30 70 30 L 50 30 Z"/>
-    </svg>
+    <img src="assets/logo-full.svg" alt="Claude Usage Stats" class="header-icon" width="48" height="48">
     <h1>Claude Usage Stats</h1>
   </div>
   <div class="load-area">
@@ -104,6 +102,13 @@
     <div class="field" id="p-model-display-field" style="display:none">
       <label>Editing</label>
       <div id="p-model-display" style="padding:7px var(--space-2); background:var(--surface); border-radius:var(--radius-md); font-weight:500"></div>
+    </div>
+
+    <div class="field" id="p-free-field" style="display:none">
+      <label class="p-free-label">
+        <input type="checkbox" id="p-free-cb" onchange="onFreeToggle()">
+        Free model — no cost
+      </label>
     </div>
 
     <div class="price-grid">

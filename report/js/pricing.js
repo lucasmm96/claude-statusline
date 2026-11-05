@@ -129,7 +129,7 @@ function openPricingModal() {
       const opt = document.createElement('option');
       opt.value = m;
       const hasPrice = data.prices[m] !== undefined;
-      opt.textContent = hasPrice ? `${m} — $${data.prices[m].input}/MTok` : `${m}`;
+      opt.textContent = hasPrice ? `${m} — $${data.prices[m].input}/MTok` : `⚠ ${m}`;
       optg.appendChild(opt);
     }
     select.appendChild(optg);
@@ -145,6 +145,7 @@ function openPricingModal() {
 
   select.value = allModels[0] || '__new__';
   loadModelPrices();
+  updateUnpricedBadge();
 
   const hasPricing = Object.keys(data.prices).length > 0;
   document.getElementById('p-clear-btn').style.display = hasPricing ? 'inline-flex' : 'none';
@@ -155,16 +156,35 @@ function openPricingModal() {
   select.focus();
 }
 
+function setFieldsDisabled(disabled) {
+  ['p-input', 'p-cr', 'p-cw', 'p-output'].forEach(id => {
+    const el = document.getElementById(id);
+    el.disabled = disabled;
+    if (disabled) el.value = '0';
+  });
+}
+
+function onFreeToggle() {
+  const checked = document.getElementById('p-free-cb').checked;
+  setFieldsDisabled(checked);
+}
+
 function loadModelPrices() {
   const select = document.getElementById('p-model-select');
   const modelName = select.value;
   const data = getPricingData();
+
+  const freeField = document.getElementById('p-free-field');
+  const freeCb    = document.getElementById('p-free-cb');
 
   if (modelName === '__new__') {
     document.getElementById('p-model-name-field').style.display = '';
     document.getElementById('p-model-name').value = '';
     document.getElementById('p-model-name').focus();
     document.getElementById('p-model-display-field').style.display = 'none';
+    freeField.style.display = '';
+    freeCb.checked = false;
+    setFieldsDisabled(false);
     document.getElementById('p-input').value  = '';
     document.getElementById('p-cr').value     = '';
     document.getElementById('p-cw').value     = '';
@@ -173,12 +193,46 @@ function loadModelPrices() {
     document.getElementById('p-model-name-field').style.display = 'none';
     document.getElementById('p-model-display-field').style.display = '';
     document.getElementById('p-model-display').textContent = modelName;
-    const price = data.prices[modelName] || { input: 0, cacheRead: 0, cacheWrite: 0, output: 0 };
-    document.getElementById('p-input').value  = price.input  || '';
-    document.getElementById('p-cr').value     = price.cacheRead  || '';
-    document.getElementById('p-cw').value     = price.cacheWrite || '';
-    document.getElementById('p-output').value = price.output || '';
+    freeField.style.display = '';
+    const price = data.prices[modelName];
+    const isFree = price !== undefined &&
+      price.input === 0 && price.cacheRead === 0 &&
+      price.cacheWrite === 0 && price.output === 0;
+    freeCb.checked = isFree;
+    setFieldsDisabled(isFree);
+    document.getElementById('p-input').value  = price ? (price.input  || '') : '';
+    document.getElementById('p-cr').value     = price ? (price.cacheRead  || '') : '';
+    document.getElementById('p-cw').value     = price ? (price.cacheWrite || '') : '';
+    document.getElementById('p-output').value = price ? (price.output || '') : '';
   }
+}
+
+function updateUnpricedBadge() {
+  if (!globalData) return;
+  const select = document.getElementById('p-model-select');
+  if (!select) return;
+  const data = getPricingData();
+  let unpricedCount = 0;
+  for (const opt of select.options) {
+    if (opt.value === '__new__') continue;
+    const hasPrice = data.prices[opt.value] !== undefined;
+    if (hasPrice) {
+      opt.textContent = `${opt.value} — $${data.prices[opt.value].input}/MTok`;
+    } else {
+      opt.textContent = `⚠ ${opt.value}`;
+      unpricedCount++;
+    }
+  }
+  const field = select.closest('.field');
+  if (!field) return;
+  let badge = field.querySelector('.unpriced-badge');
+  if (!badge) {
+    badge = document.createElement('span');
+    badge.className = 'unpriced-badge';
+    field.querySelector('label').appendChild(badge);
+  }
+  badge.textContent = unpricedCount > 0 ? `${unpricedCount} unpriced` : '';
+  badge.hidden = unpricedCount === 0;
 }
 
 function rebuildConfiguredList(data) {
@@ -243,6 +297,7 @@ function savePrices() {
   select.value = modelName;
   loadModelPrices();
   rebuildConfiguredList(data);
+  updateUnpricedBadge();
   if (globalData) renderAll();
 }
 
