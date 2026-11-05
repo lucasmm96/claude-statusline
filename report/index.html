@@ -89,6 +89,14 @@
     <h2 id="pricing-modal-title">Token Pricing</h2>
     <p class="subtitle">Set prices per model (USD per million tokens). Models without prices don't contribute to cost estimates.</p>
 
+    <div class="modal-tabs" role="tablist">
+      <button type="button" class="modal-tab active" id="p-tab-btn-prices" role="tab"
+              aria-selected="true" aria-controls="p-tab-prices" onclick="switchPricingTab('prices')">Prices</button>
+      <button type="button" class="modal-tab" id="p-tab-btn-configured" role="tab"
+              aria-selected="false" aria-controls="p-tab-configured" onclick="switchPricingTab('configured')">Configured<span id="p-tab-count"></span></button>
+    </div>
+
+    <div class="modal-tab-panel active" id="p-tab-prices" role="tabpanel" aria-labelledby="p-tab-btn-prices">
     <div class="field">
       <label>Model</label>
       <select id="p-model-select"></select>
@@ -131,8 +139,20 @@
     </div>
 
     <div class="field">
+      <button type="button" class="btn btn-sm" id="p-search-btn" onclick="togglePriceSearch()">&#128269; Search price (litellm)</button>
+      <div id="p-search-body" style="display:none">
+        <input type="text" id="p-search-input" placeholder="Model name, e.g. claude sonnet 4" autocomplete="off" spellcheck="false">
+        <div id="p-search-results" class="p-search-results"></div>
+      </div>
+      <div id="p-search-status"></div>
+    </div>
+    </div>
+
+    <div class="modal-tab-panel" id="p-tab-configured" role="tabpanel" aria-labelledby="p-tab-btn-configured">
+    <div class="field" id="p-configured-field">
       <label>Configured models</label>
       <div id="p-configured-list" style="display:flex; flex-direction:column; gap:var(--space-1)"></div>
+    </div>
     </div>
 
     <div class="modal-actions">
