@@ -31,7 +31,7 @@ Model: Sonnet 4.6 | Context: 42% | Tokens: 1.2M
 
 ```bash
 mkdir -p ~/.claude/statusline
-curl -fsSL https://raw.githubusercontent.com/lucasmm96/claude-statusline/master/scripts/statusline-command.sh \
+curl -fsSL https://raw.githubusercontent.com/lucasmm96/claude-usage-stats/master/scripts/statusline-command.sh \
   -o ~/.claude/statusline/statusline-command.sh
 chmod +x ~/.claude/statusline/statusline-command.sh
 ```
@@ -39,9 +39,9 @@ chmod +x ~/.claude/statusline/statusline-command.sh
 Or clone the repo and copy manually:
 
 ```bash
-git clone https://github.com/lucasmm96/claude-statusline.git
+git clone https://github.com/lucasmm96/claude-usage-stats.git
 mkdir -p ~/.claude/statusline
-cp claude-statusline/scripts/statusline-command.sh ~/.claude/statusline/
+cp claude-usage-stats/scripts/statusline-command.sh ~/.claude/statusline/
 chmod +x ~/.claude/statusline/statusline-command.sh
 ```
 
