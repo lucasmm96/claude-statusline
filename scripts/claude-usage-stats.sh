@@ -71,6 +71,11 @@ if (transcriptPath) {
   try {
     const stat = fs.statSync(transcriptPath);
     const fileSize = stat.size;
+    // Transcript shrunk → new file created for this resume; reset scan state and stale model slug.
+    if (fileSize < title_scan_offset) {
+      title_scan_offset = 0;
+      real_model = null;
+    }
     if (fileSize > title_scan_offset) {
       const readFrom = Math.max(0, title_scan_offset - 100); // slight overlap to avoid partial-line issues
       const buf = Buffer.alloc(fileSize - readFrom);

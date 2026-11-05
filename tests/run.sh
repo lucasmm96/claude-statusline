@@ -379,11 +379,11 @@ function calcCost(sessions, pricingData) {
   }
   return cost;
 }
-function getFilteredSessions(sessions, activeModel) {
-  if (!activeModel) return sessions;
+function getFilteredSessions(sessions, activeModels) {
+  if (!activeModels || activeModels.size === 0) return sessions;
   return sessions.filter(s =>
-    s.model === activeModel ||
-    (s.log || []).some(e => !e.event && e.model === activeModel)
+    s.model && activeModels.has(s.model) ||
+    (s.log || []).some(e => !e.event && e.model && activeModels.has(e.model))
   );
 }
 
@@ -415,7 +415,7 @@ const sessions13 = [
   { session_id: 's1', model: 'openrouter/free', log: [{ at: 't', input_tokens: 1, cache_read_tokens: 0, cache_write_tokens: 0, output_tokens: 1, context_pct: 5, model: 'Nemotron 3.5 Lightning (Free)' }] },
   { session_id: 's2', model: 'Sonnet 4.6', log: [] },
 ];
-const f13 = getFilteredSessions(sessions13, 'Nemotron 3.5 Lightning (Free)');
+const f13 = getFilteredSessions(sessions13, new Set(['Nemotron 3.5 Lightning (Free)']));
 results.push(f13.length === 1 && f13[0].session_id === 's1' ? 'T13:PASS' : 'T13:FAIL:len=' + f13.length);
 
 process.stdout.write(results.join('\n'));
