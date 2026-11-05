@@ -1,4 +1,4 @@
-# claude-statusline
+# Claude Usage Stats
 
 A Claude Code statusline hook that persists token usage and context window data across sessions — including `/compact` resets and `--resume` reopens.
 
