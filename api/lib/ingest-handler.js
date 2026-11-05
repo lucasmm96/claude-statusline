@@ -62,6 +62,7 @@ async function ingestSessions(sql, payload) {
           cache_write_tokens:e.cache_write_tokens?? null,
           output_tokens:     e.output_tokens     ?? null,
           context_pct:       e.context_pct       ?? null,
+          model:             e.model             ?? null,
         });
       }
     }
@@ -75,11 +76,12 @@ async function ingestSessions(sql, payload) {
           chunk.map(e => sql`
             INSERT INTO log_entries (
               session_id, at, event, input_tokens, cache_read_tokens,
-              cache_write_tokens, output_tokens, context_pct
+              cache_write_tokens, output_tokens, context_pct, model
             ) VALUES (
               ${e.session_id}, ${e.at}, ${e.event},
               ${e.input_tokens}, ${e.cache_read_tokens},
-              ${e.cache_write_tokens}, ${e.output_tokens}, ${e.context_pct}
+              ${e.cache_write_tokens}, ${e.output_tokens}, ${e.context_pct},
+              ${e.model}
             )
             ON CONFLICT DO NOTHING
           `)

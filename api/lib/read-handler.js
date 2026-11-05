@@ -23,7 +23,8 @@ async function readSessions(sql, query = {}) {
             'cache_read_tokens', le.cache_read_tokens,
             'cache_write_tokens', le.cache_write_tokens,
             'output_tokens', le.output_tokens,
-            'context_pct', le.context_pct
+            'context_pct', le.context_pct,
+            'model', le.model
           )
           ORDER BY le.at ASC
         ) FILTER (WHERE le.id IS NOT NULL) as log
@@ -67,6 +68,7 @@ async function readSessions(sql, query = {}) {
             ...(entry.cache_write_tokens !== null && { cache_write_tokens: entry.cache_write_tokens }),
             ...(entry.output_tokens !== null && { output_tokens: entry.output_tokens }),
             ...(entry.context_pct !== null && { context_pct: entry.context_pct }),
+            ...(entry.model != null && { model: entry.model }),
           }));
       } else {
         sess.log = [];
