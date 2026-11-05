@@ -46,19 +46,87 @@ function renderModelBar() {
   const bar = document.getElementById('model-bar');
   if (!models.length) { bar.hidden = true; return; }
   bar.hidden = false;
-  const pills = document.getElementById('model-pills');
-  pills.innerHTML = '';
+  const container = document.getElementById('model-pills');
+  container.innerHTML = '';
 
-  const makeBtn = (label, value) => {
-    const b = document.createElement('button');
-    b.className = 'profile-btn' + (activeModel === value ? ' active' : '');
-    b.textContent = label;
-    b.onclick = () => { activeModel = value; renderAll(); };
-    pills.appendChild(b);
+  // Custom dropdown: a trigger button + a popover panel
+  const wrapper = document.createElement('div');
+  wrapper.className = 'model-dropdown';
+
+  const trigger = document.createElement('button');
+  trigger.className = 'profile-btn model-dropdown-trigger';
+  trigger.type = 'button';
+  updateTriggerLabel();
+
+  const panel = document.createElement('div');
+  panel.className = 'model-dropdown-panel';
+
+  function updateTriggerLabel() {
+    if (activeModels.size === 0) {
+      trigger.textContent = 'All ▾';
+    } else {
+      const names = [...activeModels];
+      trigger.textContent = names.length === 1 ? names[0] + ' ▾' : names.length + ' models ▾';
+    }
+  }
+
+  function buildPanel() {
+    panel.innerHTML = '';
+
+    const makeRow = (label, value) => {
+      const row = document.createElement('label');
+      row.className = 'model-dropdown-row';
+
+      const cb = document.createElement('input');
+      cb.type = 'checkbox';
+      cb.checked = value === 'All' ? activeModels.size === 0 : activeModels.has(value);
+
+      cb.onchange = () => {
+        if (value === 'All') {
+          activeModels.clear();
+        } else {
+          if (cb.checked) activeModels.add(value);
+          else activeModels.delete(value);
+          if (activeModels.size === 0) activeModels.clear(); // fall back to All
+        }
+        buildPanel();
+        updateTriggerLabel();
+        renderAll();
+      };
+
+      row.appendChild(cb);
+      row.appendChild(document.createTextNode(label));
+      panel.appendChild(row);
+    };
+
+    makeRow('All', 'All');
+    models.forEach(m => makeRow(m, m));
+  }
+
+  buildPanel();
+
+  trigger.onclick = () => {
+    const isOpen = panel.classList.contains('open');
+    panel.classList.toggle('open', !isOpen);
+    trigger.classList.toggle('open', !isOpen);
   };
 
-  makeBtn('All', null);
-  models.forEach(m => makeBtn(m, m));
+  // Close on outside click (registered once on document, checks containment)
+  if (!document.__modelDropdownListener) {
+    document.__modelDropdownListener = (e) => {
+      document.querySelectorAll('.model-dropdown').forEach(w => {
+        if (!w.contains(e.target)) {
+          w.querySelector('.model-dropdown-panel').classList.remove('open');
+          w.querySelector('.model-dropdown-trigger').classList.remove('open');
+        }
+      });
+    };
+    document.addEventListener('click', document.__modelDropdownListener);
+  }
+
+  wrapper.appendChild(trigger);
+  wrapper.appendChild(panel);
+  container.appendChild(wrapper);
 }
 
 function renderAll() {

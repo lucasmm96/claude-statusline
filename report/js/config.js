@@ -13,6 +13,6 @@ const LS_PRICE_OUTPUT      = 'claude_usage_stats_price_output';
 
 let globalData = null;
 let activeProfile = null;
-let activeModel = null;
+let activeModels = new Set(); // empty = All models shown
 let tokChart = null;
 let ctxChart = null;

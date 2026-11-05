@@ -38,10 +38,10 @@ function getFilteredSessions() {
       ? sessions.filter(s => !s.profile)
       : sessions.filter(s => s.profile === activeProfile);
   }
-  if (activeModel) {
+  if (activeModels.size > 0) {
     sessions = sessions.filter(s =>
-      s.model === activeModel ||
-      (s.log || []).some(e => !e.event && e.model === activeModel)
+      s.model && activeModels.has(s.model) ||
+      (s.log || []).some(e => !e.event && e.model && activeModels.has(e.model))
     );
   }
   return sessions;
