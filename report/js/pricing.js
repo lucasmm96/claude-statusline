@@ -51,15 +51,14 @@ function getPricing() {
 function calcCost(sessions, pricingData) {
   let cost = 0;
   for (const s of sessions) {
-    const modelName = s.model || 'Unknown';
-    const modelPrice = pricingData.prices[modelName] || pricingData._default;
     const log = dedupe(s.log || []);
     for (const e of log) {
       if (e.event) continue;
-      cost += (e.input_tokens       || 0) / 1e6 * modelPrice.input;
-      cost += (e.cache_read_tokens  || 0) / 1e6 * modelPrice.cacheRead;
-      cost += (e.cache_write_tokens || 0) / 1e6 * modelPrice.cacheWrite;
-      cost += (e.output_tokens      || 0) / 1e6 * modelPrice.output;
+      const mp = entryModelPrice(e, s.model, pricingData);
+      cost += (e.input_tokens       || 0) / 1e6 * mp.input;
+      cost += (e.cache_read_tokens  || 0) / 1e6 * mp.cacheRead;
+      cost += (e.cache_write_tokens || 0) / 1e6 * mp.cacheWrite;
+      cost += (e.output_tokens      || 0) / 1e6 * mp.output;
     }
   }
   return cost;
@@ -67,16 +66,16 @@ function calcCost(sessions, pricingData) {
 
 function calcUnpricedTokens(sessions, pricingData) {
   let unpriced = 0;
+  const defaultPrice = pricingData._default;
+  const defaultIsEmpty = defaultPrice.input === 0 && defaultPrice.cacheRead === 0 &&
+                         defaultPrice.cacheWrite === 0 && defaultPrice.output === 0;
   for (const s of sessions) {
-    const modelName = s.model || 'Unknown';
-    const hasPrice = pricingData.prices[modelName] !== undefined;
-    const defaultPrice = pricingData._default;
-    const defaultIsEmpty = defaultPrice.input === 0 && defaultPrice.cacheRead === 0 &&
-                           defaultPrice.cacheWrite === 0 && defaultPrice.output === 0;
-    if (!hasPrice && defaultIsEmpty) {
-      const log = dedupe(s.log || []);
-      for (const e of log) {
-        if (e.event) continue;
+    const log = dedupe(s.log || []);
+    for (const e of log) {
+      if (e.event) continue;
+      const key = e.model || s.model || '';
+      const hasPrice = pricingData.prices[key] !== undefined;
+      if (!hasPrice && defaultIsEmpty) {
         unpriced += (e.input_tokens || 0) + (e.cache_read_tokens || 0) +
                     (e.cache_write_tokens || 0) + (e.output_tokens || 0);
       }
@@ -89,6 +88,9 @@ function extractModelsFromLog(sessions) {
   const models = new Set();
   for (const s of Object.values(sessions)) {
     if (s.model) models.add(s.model);
+    for (const e of (Array.isArray(s.log) ? s.log : [])) {
+      if (!e.event && e.model) models.add(e.model);
+    }
   }
   return Array.from(models).sort();
 }

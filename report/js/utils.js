@@ -39,9 +39,19 @@ function getFilteredSessions() {
       : sessions.filter(s => s.profile === activeProfile);
   }
   if (activeModel) {
-    sessions = sessions.filter(s => s.model === activeModel);
+    sessions = sessions.filter(s =>
+      s.model === activeModel ||
+      (s.log || []).some(e => !e.event && e.model === activeModel)
+    );
   }
   return sessions;
+}
+
+// Returns the pricing entry for a log entry, using entry.model with fallback to sessModel.
+// Always returns an object with numeric fields (never undefined).
+function entryModelPrice(entry, sessModel, pricing) {
+  const key = entry.model || sessModel || '';
+  return pricing.prices[key] || pricing._default;
 }
 
 function isInDateRange(isoDate) {

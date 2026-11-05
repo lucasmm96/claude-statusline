@@ -58,6 +58,9 @@ async function initSchema(sql) {
   )`;
 
   await sql`CREATE INDEX IF NOT EXISTS idx_errors_at ON log_errors (occurred_at DESC)`;
+
+  // Migration: add model column to log_entries (idempotent)
+  await sql`ALTER TABLE log_entries ADD COLUMN IF NOT EXISTS model TEXT`;
 }
 
 async function logError({ endpoint, http_status, error_code, message, session_id = null }) {

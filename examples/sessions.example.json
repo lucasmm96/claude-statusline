@@ -3,13 +3,14 @@
     "a1b2c3d4-0001-4000-8000-000000000001": {
       "session_id": "a1b2c3d4-0001-4000-8000-000000000001",
       "session_name": "Feature implementation",
-      "model": "Sonnet 4.6",
+      "model": "Nemotron 3.5 Lightning (Free)",
       "started_at": "2026-10-05T10:00:00.000Z",
       "last_activity_at": "2026-10-05T11:52:00.000Z",
       "_state": {
         "total_in": 151200,
         "total_out": 9100,
-        "last_ctx": 41
+        "last_ctx": 41,
+        "real_model": "nvidia/nemotron-3.5-lightning:free"
       },
       "log": [
         {
@@ -18,7 +19,8 @@
           "cache_read_tokens": 0,
           "cache_write_tokens": 96400,
           "output_tokens": 4800,
-          "context_pct": 51
+          "context_pct": 51,
+          "model": "Nemotron 3.5 Lightning (Free)"
         },
         {
           "at": "2026-10-05T10:18:00.000Z",
@@ -26,7 +28,8 @@
           "cache_read_tokens": 101200,
           "cache_write_tokens": 3100,
           "output_tokens": 1250,
-          "context_pct": 53
+          "context_pct": 53,
+          "model": "Nemotron 3.5 Lightning (Free)"
         },
         {
           "at": "2026-10-05T10:35:00.000Z",
@@ -34,7 +37,8 @@
           "cache_read_tokens": 104300,
           "cache_write_tokens": 1800,
           "output_tokens": 960,
-          "context_pct": 54
+          "context_pct": 54,
+          "model": "Dots 3 Note Preview (Free)"
         },
         {
           "at": "2026-10-05T10:52:00.000Z",
@@ -42,7 +46,8 @@
           "cache_read_tokens": 106100,
           "cache_write_tokens": 4200,
           "output_tokens": 2100,
-          "context_pct": 57
+          "context_pct": 57,
+          "model": "Dots 3 Note Preview (Free)"
         },
         {
           "at": "2026-10-05T11:08:00.000Z",
@@ -50,7 +55,8 @@
           "cache_read_tokens": 110300,
           "cache_write_tokens": 5900,
           "output_tokens": 2850,
-          "context_pct": 62
+          "context_pct": 62,
+          "model": "Nemotron 3.5 Lightning (Free)"
         },
         {
           "at": "2026-10-05T11:14:00.000Z",
@@ -63,7 +69,8 @@
           "cache_read_tokens": 54200,
           "cache_write_tokens": 21000,
           "output_tokens": 3400,
-          "context_pct": 38
+          "context_pct": 38,
+          "model": "Nemotron 3.5 Lightning (Free)"
         },
         {
           "at": "2026-10-05T11:38:00.000Z",
@@ -71,7 +78,8 @@
           "cache_read_tokens": 78600,
           "cache_write_tokens": 3500,
           "output_tokens": 1200,
-          "context_pct": 42
+          "context_pct": 42,
+          "model": "Nemotron 3.5 Lightning (Free)"
         },
         {
           "at": "2026-10-05T11:52:00.000Z",
@@ -79,7 +87,8 @@
           "cache_read_tokens": 82100,
           "cache_write_tokens": 2900,
           "output_tokens": 890,
-          "context_pct": 43
+          "context_pct": 43,
+          "model": "Nemotron 3.5 Lightning (Free)"
         }
       ]
     },

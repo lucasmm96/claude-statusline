@@ -15,10 +15,11 @@ CONF="$SCRIPT_DIR/statusline-backup.conf"
 [ -f "$CONF" ] && source "$CONF"
 
 LOG_FILE="$SCRIPT_DIR/statusline-sessions.json"
+CACHE_FILE="$SCRIPT_DIR/statusline-models-cache.json"
 
-result=$(node - "$input" "$LOG_FILE" "$PPID_FALLBACK" "${STATUSLINE_PROFILE:-}" 2>/dev/null << 'JSEOF'
+result=$(node - "$input" "$LOG_FILE" "$PPID_FALLBACK" "${STATUSLINE_PROFILE:-}" "$CACHE_FILE" 2>/dev/null << 'JSEOF'
 const fs = require('fs');
-const [,, rawInput, logFile, ppidFallback, profileArg] = process.argv;
+const [,, rawInput, logFile, ppidFallback, profileArg, cacheFilePath] = process.argv;
 
 let d = {};
 try { d = JSON.parse(rawInput); } catch(e) {}
@@ -60,9 +61,10 @@ const prev_in  = st.total_in  ?? 0;
 const prev_out = st.total_out ?? 0;
 const last_ctx = st.last_ctx  ?? 0;
 
-// --- Read custom-title from JSONL transcript (incremental, only new bytes) ---
+// --- Read custom-title and real model from JSONL transcript (incremental, only new bytes) ---
 let custom_title       = st.custom_title       ?? null;
 let title_scan_offset  = st.title_scan_offset  ?? 0;
+let real_model         = st.real_model         ?? null; // slug, e.g. "nvidia/nemotron-3.5-lightning:free"
 
 if (transcriptPath) {
   try {
@@ -84,6 +86,9 @@ if (transcriptPath) {
           if (entry.type === 'custom-title' && entry.customTitle) {
             custom_title = entry.customTitle;
           }
+          if (entry.type === 'assistant' && entry.message?.model && entry.message.model.includes('/')) {
+            real_model = entry.message.model;
+          }
         } catch(e) {}
       }
       const lastNl = text.lastIndexOf('\n');
@@ -91,6 +96,35 @@ if (transcriptPath) {
     }
   } catch(e) {}
 }
+
+// --- Resolve commercial name from slug ---
+
+// Converts a slug to a readable name without network.
+// "nvidia/nemotron-3.5-lightning:free" -> "Nemotron 3.5 Lightning"
+function heuristicName(slug) {
+  const base = (slug.split('/')[1] || slug).replace(/:[^:]+$/, '');
+  return base.split('-').map(w => /^\d/.test(w) ? w : w[0].toUpperCase() + w.slice(1)).join(' ');
+}
+
+// Ensures canonical "(Free)" suffix when slug ends with ":free".
+// Strips any existing free-related suffix before (re)appending.
+// isFree is derived from the original slug, not from the name.
+function applyFreeSuffix(name, isFree) {
+  const cleaned = name.replace(/[\s(:]+free[)\s]*$/i, '').trimEnd();
+  return isFree ? cleaned + ' (Free)' : cleaned;
+}
+
+let modelCacheMap = {};
+try {
+  const raw = JSON.parse(fs.readFileSync(cacheFilePath, 'utf8'));
+  modelCacheMap = raw.models || {};
+} catch(e) {}
+
+const isFree = real_model ? real_model.endsWith(':free') : false;
+const baseName = real_model
+  ? (modelCacheMap[real_model] || heuristicName(real_model))
+  : model; // fallback: display_name from payload (e.g. "Sonnet 4.6"), left untouched
+const displayModel = real_model ? applyFreeSuffix(baseName, isFree) : baseName;
 
 const effectiveName = custom_title ?? sessionName;
 
@@ -106,13 +140,16 @@ if (is_compact) {
     last.cache_write_tokens === cache_write_tokens &&
     last.output_tokens      === output_tokens;
   if (!is_dup) {
-    sess.log.push({ at: nowIso, input_tokens, cache_read_tokens, cache_write_tokens, output_tokens, context_pct: used_pct });
+    sess.log.push({
+      at: nowIso, input_tokens, cache_read_tokens, cache_write_tokens, output_tokens, context_pct: used_pct,
+      ...(real_model ? { model: displayModel } : {}),
+    });
   }
 }
 
-sess._state           = { total_in, total_out, last_ctx: used_pct > 0 ? used_pct : last_ctx, custom_title, title_scan_offset };
+sess._state           = { total_in, total_out, last_ctx: used_pct > 0 ? used_pct : last_ctx, custom_title, title_scan_offset, real_model };
 if (profile !== null) sess.profile = profile;
-sess.model            = model;
+sess.model            = displayModel;
 sess.last_activity_at = nowIso;
 if (effectiveName) sess.session_name = effectiveName;
 data.sessions[sessionId] = sess;
@@ -133,7 +170,7 @@ const ctx_int       = Math.round(display_ctx);
 const ctx_color     = display_ctx >= 80 ? '31' : display_ctx >= 60 ? '33' : '32';
 const ctx_suffix    = ctx_was_stale ? '~' : '%';
 
-process.stdout.write([model, ctx_int, ctx_color, ctx_suffix, tok_k].join('\t'));
+process.stdout.write([displayModel, ctx_int, ctx_color, ctx_suffix, tok_k].join('\t'));
 JSEOF
 )
 
@@ -200,6 +237,37 @@ fs.writeFileSync(deltaFile, JSON.stringify({ sessions: out }));
     rm -f "$_DELTA_FILE"
     rmdir "$_APILOCK" 2>/dev/null
   ) &
+fi
+
+# --- Background model cache refresh (if curl available, TTL 24h) ---
+if command -v curl >/dev/null 2>&1; then
+  (
+    _MCACHE="$CACHE_FILE"
+    _MLOCK="$SCRIPT_DIR/.statusline-models.lock.d"
+    if [ -f "$_MCACHE" ]; then
+      _AGE=$(( $(date +%s) - $(date -r "$_MCACHE" +%s 2>/dev/null || echo 0) ))
+      [ "$_AGE" -lt 86400 ] && exit 0
+    fi
+    mkdir "$_MLOCK" 2>/dev/null || exit 0
+    _TMP="$SCRIPT_DIR/.statusline-models-tmp.$$.json"
+    curl -sf --max-time 10 --connect-timeout 5 \
+      "https://openrouter.ai/api/v1/models" -o "$_TMP" 2>/dev/null
+    if [ -f "$_TMP" ]; then
+      node -e "
+const fs = require('fs');
+const [,,src,dst] = process.argv;
+try {
+  const raw = JSON.parse(fs.readFileSync(src, 'utf8'));
+  const models = {};
+  for (const m of raw.data || []) { if (m.id && m.name) models[m.id] = m.name; }
+  fs.writeFileSync(dst + '.tmp', JSON.stringify({ fetched_at: new Date().toISOString(), models }));
+  fs.renameSync(dst + '.tmp', dst);
+} catch(e) {}
+" - "$_TMP" "$_MCACHE" 2>/dev/null
+      rm -f "$_TMP"
+    fi
+    rmdir "$_MLOCK" 2>/dev/null
+  ) &>/dev/null &
 fi
 
 CYAN='\033[36m'
