@@ -86,7 +86,7 @@ if (transcriptPath) {
           if (entry.type === 'custom-title' && entry.customTitle) {
             custom_title = entry.customTitle;
           }
-          if (entry.type === 'assistant' && entry.message?.model) {
+          if (entry.type === 'assistant' && entry.message?.model && entry.message.model.includes('/')) {
             real_model = entry.message.model;
           }
         } catch(e) {}

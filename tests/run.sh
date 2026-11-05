@@ -143,6 +143,23 @@ else
 fi
 rm -rf "$TMP"
 
+# T-extra-5: direct Anthropic slug in transcript (no /) — display_name preserved, real_model stays null
+TMP=$(make_test_env)
+TRANSCRIPT="$TMP/session.jsonl"
+printf '%s\n' \
+  '{"type":"assistant","message":{"model":"claude-sonnet-4-6","role":"assistant","content":[]},"session_id":"te5"}' \
+  > "$TRANSCRIPT"
+PAYLOAD="{\"session_id\":\"te5\",\"model\":{\"display_name\":\"Sonnet 4.6\"},\"transcript_path\":\"$TRANSCRIPT\",\"context_window\":{\"used_percentage\":10,\"total_input_tokens\":5000,\"total_output_tokens\":500,\"current_usage\":{\"input_tokens\":5,\"cache_read_input_tokens\":4000,\"cache_creation_input_tokens\":100,\"output_tokens\":200}}}"
+OUT=$(run_in_env "$TMP" "$PAYLOAD")
+SM=$(get_sess_model "$TMP" "te5")
+RM=$(get_state_field "$TMP" "te5" "real_model")
+if echo "$OUT" | grep -q 'Sonnet 4.6' && [ "$SM" = "Sonnet 4.6" ] && [ -z "$RM" ]; then
+  pass "T-extra-5: direct Anthropic slug in transcript — display_name preserved, real_model=null"
+else
+  fail "T-extra-5: OUT='$OUT' sess.model='$SM' real_model='$RM'"
+fi
+rm -rf "$TMP"
+
 # T-extra-1: slug with :beta suffix — no (Free) suffix appended
 TMP=$(make_test_env)
 TRANSCRIPT="$TMP/session.jsonl"
