@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 // One-shot migration: sends ~/.claude/claude-usage-stats/claude-usage-stats-log.json to the API in batches.
-// Usage: node scripts/migrate-to-db.mjs [batch_size]
+// Usage: node report/js/migrate-to-db.mjs [batch_size]
 
 import { readFileSync } from 'fs';
 import { homedir } from 'os';
@@ -11,7 +11,7 @@ const API_KEY = process.env.API_KEY;
 const BATCH = parseInt(process.argv[2] || '10', 10);
 
 if (!API_KEY) {
-  console.error('Error: API_KEY env var required.\nUsage: API_KEY=<key> node scripts/migrate-to-db.mjs');
+  console.error('Error: API_KEY env var required.\nUsage: API_KEY=<key> node report/js/migrate-to-db.mjs');
   process.exit(1);
 }
 
