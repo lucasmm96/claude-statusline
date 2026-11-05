@@ -65,6 +65,7 @@ const last_ctx = st.last_ctx  ?? 0;
 let custom_title       = st.custom_title       ?? null;
 let title_scan_offset  = st.title_scan_offset  ?? 0;
 let real_model         = st.real_model         ?? null; // slug, e.g. "nvidia/nemotron-3.5-lightning:free"
+if (real_model && !real_model.includes('/')) real_model = null; // clear stale direct-Anthropic slug
 
 if (transcriptPath) {
   try {
