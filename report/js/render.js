@@ -34,9 +34,14 @@ function renderProfileBar() {
 }
 
 function renderModelBar() {
-  const models = [...new Set(
-    Object.values(globalData.sessions).map(s => s.model).filter(Boolean)
-  )].sort();
+  const modelSet = new Set();
+  for (const s of Object.values(globalData.sessions)) {
+    if (s.model) modelSet.add(s.model);
+    for (const e of (s.log || [])) {
+      if (!e.event && e.model) modelSet.add(e.model);
+    }
+  }
+  const models = [...modelSet].sort();
 
   const bar = document.getElementById('model-bar');
   if (!models.length) { bar.hidden = true; return; }
@@ -82,23 +87,23 @@ function renderAll() {
   const statBar  = document.getElementById('stat-bar');
   if (pricing) {
     let cost = 0, unpriced = 0;
+    const defaultIsEmpty = pricing._default.input === 0 && pricing._default.cacheRead === 0 &&
+                           pricing._default.cacheWrite === 0 && pricing._default.output === 0;
     for (const s of sessions) {
-      const modelName = s.model || 'Unknown';
-      const hasModelPrice = pricing.prices[modelName] !== undefined;
-      const defaultIsEmpty = pricing._default.input === 0 && pricing._default.cacheRead === 0 &&
-                             pricing._default.cacheWrite === 0 && pricing._default.output === 0;
-      const modelPrice = pricing.prices[modelName] || pricing._default;
       const log = dedupe(s.log || []);
       for (const e of log) {
         if (e.event || !isInDateRange(e.at)) continue;
-        if (!hasModelPrice && defaultIsEmpty) {
+        const key = e.model || s.model || '';
+        const hasPrice = pricing.prices[key] !== undefined;
+        if (!hasPrice && defaultIsEmpty) {
           unpriced += (e.input_tokens || 0) + (e.cache_read_tokens || 0) +
                       (e.cache_write_tokens || 0) + (e.output_tokens || 0);
         } else {
-          cost += (e.input_tokens       || 0) / 1e6 * modelPrice.input;
-          cost += (e.cache_read_tokens  || 0) / 1e6 * modelPrice.cacheRead;
-          cost += (e.cache_write_tokens || 0) / 1e6 * modelPrice.cacheWrite;
-          cost += (e.output_tokens      || 0) / 1e6 * modelPrice.output;
+          const mp = entryModelPrice(e, s.model, pricing);
+          cost += (e.input_tokens       || 0) / 1e6 * mp.input;
+          cost += (e.cache_read_tokens  || 0) / 1e6 * mp.cacheRead;
+          cost += (e.cache_write_tokens || 0) / 1e6 * mp.cacheWrite;
+          cost += (e.output_tokens      || 0) / 1e6 * mp.output;
         }
       }
     }
@@ -186,14 +191,17 @@ function renderDetail(sess) {
   const detail = document.getElementById('detail');
 
   const pricing = getPricing();
-  const modelPrice = pricing
-    ? (pricing.prices[sess.model || ''] || pricing._default)
-    : null;
+
+  // Collect distinct models from log entries; fall back to sess.model for display
+  const entryModels = [...new Set(
+    (sess.log || []).filter(e => !e.event && e.model).map(e => e.model)
+  )];
+  const modelDisplay = entryModels.length > 0 ? entryModels.join(', ') : (sess.model || '—');
 
   detail.innerHTML = `
     <div class="detail-header">
       <h2>${sess.session_name || sess.session_id}</h2>
-      <p>${sess.model} &middot; ${fmtDt(sess.started_at)} &middot; ${fmtDur(sess.started_at, sess.last_activity_at)} &middot; ${st.exch.length} exchanges</p>
+      <p>${modelDisplay} &middot; ${fmtDt(sess.started_at)} &middot; ${fmtDur(sess.started_at, sess.last_activity_at)} &middot; ${st.exch.length} exchanges</p>
     </div>
     <div class="detail-stats">
       <div><div class="ds-label">Total tokens</div><div class="ds-val">${fmtN(st.total)}</div></div>
@@ -218,7 +226,7 @@ function renderDetail(sess) {
     </div>
     <div class="log-section">
       <h3>Exchange Log</h3>
-      ${buildLogTable(st.log, modelPrice)}
+      ${buildLogTable(st.log, pricing, sess.model)}
     </div>
   `;
 
