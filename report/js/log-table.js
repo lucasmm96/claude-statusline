@@ -24,7 +24,7 @@ function buildLogTable(log, pricing, sessModel) {
       const costCell = hasPricing
         ? (() => {
             const key = e.model || sessModel || '';
-            const hasPrice = pricing.prices[key] !== undefined;
+            const hasPrice = findPrice(key, pricing) !== null;
             if (!hasPrice && defaultIsEmpty) return '<td class="cost-warning">?</td>';
             const mp = entryModelPrice(e, sessModel, pricing);
             const c = (e.input_tokens        || 0) / 1e6 * mp.input +

@@ -47,11 +47,36 @@ function getFilteredSessions() {
   return sessions;
 }
 
+// Resolve a price entry for a model key. Exact match first, then a normalized
+// match (case/punctuation-insensitive), then a normalized containment match
+// (e.g. "DeepSeek V4 Flash 0731" vs "DeepSeek: DeepSeek V4 Flash 0731").
+// Containment only applies when the shorter key has >= 10 alphanumerics, so
+// short names like "Sonnet 4" never match "Sonnet 4.6". Returns null if none.
+function findPrice(key, pricing) {
+  if (!key || !pricing || !pricing.prices) return null;
+  if (pricing.prices[key] !== undefined) return pricing.prices[key];
+  const nk = normKey(key);
+  if (!nk) return null;
+  let best = null, bestLen = 0;
+  for (const [k, v] of Object.entries(pricing.prices)) {
+    const n = normKey(k);
+    if (!n) continue;
+    if (n === nk) return v;
+    const shorter = n.length < nk.length ? n : nk;
+    const longer  = n.length < nk.length ? nk : n;
+    if (shorter.length >= 10 && longer.includes(shorter) && n.length > bestLen) {
+      best = v;
+      bestLen = n.length;
+    }
+  }
+  return best;
+}
+
 // Returns the pricing entry for a log entry, using entry.model with fallback to sessModel.
 // Always returns an object with numeric fields (never undefined).
 function entryModelPrice(entry, sessModel, pricing) {
   const key = entry.model || sessModel || '';
-  return pricing.prices[key] || pricing._default;
+  return findPrice(key, pricing) || pricing._default;
 }
 
 function isInDateRange(isoDate) {

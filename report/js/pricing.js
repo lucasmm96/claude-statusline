@@ -74,7 +74,7 @@ function calcUnpricedTokens(sessions, pricingData) {
     for (const e of log) {
       if (e.event) continue;
       const key = e.model || s.model || '';
-      const hasPrice = pricingData.prices[key] !== undefined;
+      const hasPrice = findPrice(key, pricingData) !== null;
       if (!hasPrice && defaultIsEmpty) {
         unpriced += (e.input_tokens || 0) + (e.cache_read_tokens || 0) +
                     (e.cache_write_tokens || 0) + (e.output_tokens || 0);
@@ -410,10 +410,12 @@ function searchLiteLLM(q) {
     if (!nk.includes(nq)) continue;
     let rank = nk === nq ? 0 : nk.startsWith(nq) ? 1 : 2;   // exact > prefix > substring
     if (rank > 0 && LITELLM_PRIMARY_PROVIDERS.has(normKey(key.split('/')[0]))) rank--;
-    scored.push([rank, key.length, key]); // shorter key = more specific = ranks higher
+    const entry = litellmData && litellmData[key];
+    const noPrice = entry && typeof entry.input_cost_per_token === 'number' ? 0 : 1;
+    scored.push([noPrice, rank, key.length, key]); // priced entries first, then exact > prefix > substring, shorter key
   }
-  scored.sort((a, b) => a[0] - b[0] || a[1] - b[1] || (a[2] < b[2] ? -1 : a[2] > b[2] ? 1 : 0));
-  return scored.slice(0, 8).map(x => x[2]);
+  scored.sort((a, b) => a[0] - b[0] || a[1] - b[1] || a[2] - b[2] || (a[3] < b[3] ? -1 : a[3] > b[3] ? 1 : 0));
+  return scored.slice(0, 8).map(x => x[3]);
 }
 
 function renderLiteLLMResults() {
@@ -450,6 +452,13 @@ function renderLiteLLMResults() {
 function applyLitellmPrice(key) {
   const entry = litellmData[key];
   if (!entry) return;
+  const hasAny = ['input_cost_per_token', 'cache_read_input_token_cost',
+                  'cache_creation_input_token_cost', 'output_cost_per_token']
+    .some(f => typeof entry[f] === 'number');
+  if (!hasAny) {
+    setPriceSearchStatus('err', 'No price data in litellm for: ' + key);
+    return;
+  }
   const cb = document.getElementById('p-free-cb');
   if (cb.checked) {
     cb.checked = false;  // programmatic uncheck fires no change event; re-enable fields explicitly

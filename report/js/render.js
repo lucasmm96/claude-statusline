@@ -162,7 +162,7 @@ function renderAll() {
       for (const e of log) {
         if (e.event || !isInDateRange(e.at)) continue;
         const key = e.model || s.model || '';
-        const hasPrice = pricing.prices[key] !== undefined;
+        const hasPrice = findPrice(key, pricing) !== null;
         if (!hasPrice && defaultIsEmpty) {
           unpriced += (e.input_tokens || 0) + (e.cache_read_tokens || 0) +
                       (e.cache_write_tokens || 0) + (e.output_tokens || 0);
